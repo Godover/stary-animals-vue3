@@ -230,7 +230,6 @@ export default {
       this.news = res.content;
     });
     hotNewsList(1).then((res) => {
-      console.log(res);
       this.news1 = res.content;
     });
   },
