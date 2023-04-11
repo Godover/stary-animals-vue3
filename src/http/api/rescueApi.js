@@ -1,5 +1,7 @@
 import service from "../request"
 
+
+// 当前用户的救助列表
 export function rescueListByUserId(page, size) {
     return service({
         url: "/endpoint/v1/rescue/list_by_user_id",
@@ -11,6 +13,7 @@ export function rescueListByUserId(page, size) {
     });
 }
 
+// 分页救助列表
 export function rescueList(page, size) {
     return service({
         url: "/endpoint/v1/rescue/list",
@@ -22,6 +25,7 @@ export function rescueList(page, size) {
     });
 }
 
+// 单条救助列表
 export function rescueById(id) {
     return service({
         url: "/endpoint/v1/rescue/get",
@@ -32,6 +36,7 @@ export function rescueById(id) {
     });
 }
 
+// 修改or新增救助列表
 export function rescueModifyById(data) {
     return service({
         url: "/endpoint/v1/rescue/modify",
@@ -40,6 +45,7 @@ export function rescueModifyById(data) {
     });
 }
 
+// 删除单条救助信息
 export function rescueDeleteById(id) {
     return service({
         url: "/endpoint/v1/rescue/delete",
@@ -50,6 +56,7 @@ export function rescueDeleteById(id) {
     });
 }
 
+// 搜索救助
 export function rescueSearch(search) {
     return service({
         url: "/endpoint/v1/rescue/search",

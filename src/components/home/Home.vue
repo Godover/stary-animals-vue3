@@ -97,7 +97,7 @@
 <script>
 import router from "@/router";
 
-import { hotNewsList } from "@/http/api/baseDataApi";
+import { hotNewsList } from "@/http/api/commonApi";
 
 export default {
   name: "HomeComponent",

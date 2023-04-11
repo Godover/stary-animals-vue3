@@ -1,5 +1,6 @@
 import service from "../request"
 
+// 当前用户的领养列表
 export function adoptListByUserId(page, size) {
     return service({
         url: "/endpoint/v1/adopt/list_by_user_id",
@@ -11,6 +12,7 @@ export function adoptListByUserId(page, size) {
     });
 }
 
+// 分页领养列表
 export function adoptList(page, size) {
     return service({
         url: "/endpoint/v1/adopt/list",
@@ -22,6 +24,7 @@ export function adoptList(page, size) {
     });
 }
 
+// 单条领养列表
 export function adoptById(id) {
     return service({
         url: "/endpoint/v1/adopt/get",
@@ -32,6 +35,7 @@ export function adoptById(id) {
     });
 }
 
+// 修改or新增领养列表
 export function adoptModifyById(data) {
     return service({
         url: "/endpoint/v1/adopt/modify",
@@ -40,6 +44,7 @@ export function adoptModifyById(data) {
     });
 }
 
+// 删除领养
 export function adoptDeleteById(id) {
     return service({
         url: "/endpoint/v1/adopt/delete",
@@ -50,6 +55,7 @@ export function adoptDeleteById(id) {
     });
 }
 
+// 搜索
 export function adoptSearch(search) {
     return service({
         url: "/endpoint/v1/adopt/search",

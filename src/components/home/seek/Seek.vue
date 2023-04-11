@@ -101,7 +101,7 @@ import router from "@/router";
 import SeekStatusComponent from "@/components/home/seek/SeekStatusComponent";
 import {ElLoading} from "element-plus";
 import {seekList} from "@/http/api/seekApi";
-import {hotSeekList} from "@/http/api/baseDataApi";
+import {hotSeekList} from "@/http/api/commonApi";
 import CityComponent from "@/components/home/CityComponent";
 
 export default {

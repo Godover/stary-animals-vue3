@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import {animalsCategoryList} from "@/http/api/baseDataApi";
+import {animalsCategoryList} from "@/http/api/commonApi";
 
 export default {
   name: 'AdoptManagerComponent',
