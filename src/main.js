@@ -7,7 +7,6 @@ import './styles/index.less'
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import './mock'
 
 const app = createApp(App)
 
