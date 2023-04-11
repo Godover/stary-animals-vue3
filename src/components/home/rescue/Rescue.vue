@@ -15,7 +15,10 @@
     <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in infoArray">
       <Card :bordered="false" @click="push('/rescue_view?id='+item.id)">
         <div style="display: flex">
-          <img :src="item.url" style="max-width: 160px">
+          <div style="height: 100px;width: 200px;position: relative;">
+            <img :src="item.imgFiles[0].filePath"
+                 style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+          </div>
           <div class="ivu-ml-16">
             <ul style="list-style: none">
               <li class="title">

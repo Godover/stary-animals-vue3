@@ -6,7 +6,9 @@ export function hotNewsList(type) {
         url: "/endpoint/v1/common/hot_news_list",
         method: "POST",
         data: {
-            "type": type
+            "type": type,
+            "page": 1,
+            'size': 10
         }
     });
 }

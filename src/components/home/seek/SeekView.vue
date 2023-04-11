@@ -29,7 +29,7 @@
       <div style="width: 500px">
         <el-carousel :interval="4000" arrow="always">
           <el-carousel-item v-for="item in seekDto.imgFiles" :key="item.id">
-            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: contain;">
+            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: cover;object-position: center">
           </el-carousel-item>
         </el-carousel>
       </div>

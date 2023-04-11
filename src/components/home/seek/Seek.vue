@@ -57,8 +57,11 @@
         <div style="background:#f8f8f8;padding: 4px;width: 900px" v-for="item in infoArray">
           <Card :bordered="false" @click="push('seek_view?id='+item.id)">
             <div style="display: flex">
-              <img :src="item.imgFiles[0].filePath" style="max-width: 160px">
-              <div class="ivu-ml-16">
+              <div style="height: 100px;width: 200px;position: relative;">
+                <img :src="item.imgFiles[0].filePath"
+                     style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+              </div>
+              <div class="ivu-ml-16" style="width: 700px">
                 <ul style="list-style: none">
                   <li class="title">
                     <b v-if="item.type" style="color: #ed4014">[寻宠]</b>
@@ -68,7 +71,7 @@
                   <li class="ivu-mb-8 ivu-mt-4 description">
                     {{ item.description }}
                   </li>
-                  <li style="position: absolute;bottom: 10px;width: 670px">
+                  <li style="position: absolute;bottom: 10px;width: 660px">
                     <el-text>宠类：{{ item.animalCategoryDto.name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       区县：
                       <CityComponent :city="item.cityDto"/>

@@ -42,10 +42,13 @@
     <Tabs value="name1" class="ivu-mt-16" :animated="true">
       <TabPane icon="ios-information-circle" label="最新信息" name="name1">
         <div class="cardContainer">
-          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in infoArray">
+          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in newsAdopt">
             <Card :bordered="false" @click="push('/adopt_view?id='+item.id)">
               <div style="display: flex">
-                <img :src="item.url" style="max-width: 160px">
+                <div style="height: 100px;width: 200px;position: relative;">
+                  <img :src="item.imgFiles[0].filePath"
+                       style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+                </div>
                 <div class="ivu-ml-16">
                   <ul style="list-style: none">
                     <li class="title">
@@ -73,10 +76,13 @@
       <!--      已搞定-->
       <TabPane icon="ios-checkmark-circle" label="已搞定" name="name2">
         <div class="cardContainer">
-          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in infoArray">
+          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in overAdopt">
             <Card :bordered="false">
               <div style="display: flex">
-                <img :src="item.url" style="max-width: 160px">
+                <div style="height: 100px;width: 200px;position: relative;">
+                  <img :src="item.imgFiles[0].filePath"
+                       style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+                </div>
                 <div class="ivu-ml-16">
                   <ul style="list-style: none">
                     <li class="title">
@@ -111,6 +117,7 @@
 
 import router from "@/router";
 import AdoptStatusComponent from "@/components/home/adopt/AdoptStatusComponent";
+import {animalsCategoryList, cityList} from "@/http/api/commonApi";
 
 export default {
   name: 'AdoptComponent',
@@ -124,84 +131,28 @@ export default {
       cityArray: ["万州区", "涪陵区", "渝中区", "大渡口区", "江北区", "沙坪坝区", "九龙坡区", "南岸区", "北碚区"],
       categoryArray: ["狗狗", "猫咪", "鸟", "鱼", "小宠", "其他"],
       typeArray: ["送养", "领养"],
-      infoArray: [
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 1,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 1,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 2,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 1,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 2,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 1,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 1,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 1,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 1,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 3,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 1,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 4,
-          time: '3月18日22:02'
-        },
-        {
-          url: 'https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304',
-          type: 1,
-          title: '免费赠送三个月大的猫咪，体外体内除虫已做',
-          category: '狗狗',
-          city: '城市',
-          description: '一共12只小狗，2022年12月20号左右出生，2个狗妈妈生的，小狗身体健康活泼可爱，经历了上海冬天最冷的时侯，好养活',
-          status: 1,
-          time: '3月18日22:02'
-        }
-      ]
+      newsAdopt: [],
+      overAdopt: [],
+      count: 0
     }
   },
   methods: {
     push(model) {
       router.push(model)
+    },
+    searchInfo() {
+
     }
+  }, created() {
+    cityList().then(data => {
+      this.count++
+      this.cityArray = data
+    })
+    animalsCategoryList().then(data => {
+      this.count++
+      this.categoryArray = data
+    })
+    this.searchInfo()
   }
 }
 </script>

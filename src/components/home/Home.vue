@@ -6,13 +6,13 @@
         首页
       </BreadcrumbItem>
     </Breadcrumb>
-    <el-divider />
+    <el-divider/>
     <Row style="max-height: 330px; height: 400px; overflow: hidden">
       <Col span="8" class="ivu-pr-16">
         <el-carousel>
           <div class="smallpic_item">
             <el-carousel-item v-for="(item, index) in urls" :key="index">
-              <img :src="item.url" style="width: 100%; height: 100%" />
+              <img :src="item.url" style="width: 100%; height: 100%"/>
               <h5>保护动物，你我共同的使命</h5>
             </el-carousel-item>
           </div>
@@ -23,10 +23,9 @@
         <Paragraph>
           <ul>
             <li
-              v-for="item in news"
-              style="align-items: center; user-select: none"
-              @click="push('/realtime_view?id=' + item.id)"
-            >
+                v-for="item in hotRealTime"
+                style="align-items: center; user-select: none"
+                @click="push('/realtime_view?id=' + item.id)">
               <el-text tag="b" class="w-350px" truncated>
                 {{ item.title }}
               </el-text>
@@ -41,9 +40,8 @@
           <div>
             <ul>
               <li
-                v-for="item in news1"
-                @click="push('/realtime_view?id=' + item.id)"
-              >
+                  v-for="item in hotInteresting"
+                  @click="push('/realtime_view?id=' + item.id)">
                 <el-text tag="b" truncated>{{ item.title }}</el-text>
               </li>
             </ul>
@@ -54,21 +52,25 @@
     <Title :level="3" class="ivu-mt-16 ivu-mb-16">最新领养</Title>
     <div style="display: flex; flex-wrap: wrap">
       <div
-        v-for="item in newAdopts"
-        style="width: 255px; user-select: none"
-        @click="push('/adopt_view?id=' + item.id)"
-      >
+          v-for="item in hotAdopts"
+          style="width: 255px; user-select: none"
+          @click="push('/adopt_view?id=' + item.id)">
         <div style="background: #f8f8f8; padding: 3px">
           <Card :bordered="false">
             <template #title>
               <el-text size="small" style="width: 150px" truncated>{{
-                item.title
-              }}</el-text>
+                  item.title
+                }}
+              </el-text>
               <el-text size="small" class="ivu-fr">{{
-                item.gmtCreate
-              }}</el-text>
+                  item.gmtCreate
+                }}
+              </el-text>
             </template>
-            <img :src="item.url" style="width: 100%; height: 100%" />
+            <div style="height: 150px;width: 100%;position: relative;">
+              <img :src="item.imgFiles[0].filePath"
+                   style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+            </div>
           </Card>
         </div>
       </div>
@@ -76,18 +78,21 @@
     <Title :level="3" class="ivu-mt-16 ivu-mb-16">最新寻宠</Title>
     <div class="cardContainer">
       <div
-        v-for="item in newSeeks"
-        style="width: 255px; background: #f8f8f8; padding: 3px"
-        @click="push('/seek_view?id=' + item.id)"
-      >
+          v-for="item in hotSeeks"
+          style="width: 255px; background: #f8f8f8; padding: 3px"
+          @click="push('/seek_view?id=' + item.id)">
         <Card :bordered="false">
           <template #title>
             <el-text size="small" style="width: 150px" truncated>{{
-              item.title
-            }}</el-text>
-            <el-text size="small" class="ivu-fr">{{ item.time }}</el-text>
+                item.title
+              }}
+            </el-text>
+            <el-text size="small" class="ivu-fr">{{ item.gmtCreate }}</el-text>
           </template>
-          <img :src="item.url" style="width: 100%; height: 100%" />
+          <div style="height: 150px;width: 100%;position: relative;">
+            <img :src="item.imgFiles[0].filePath"
+                 style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+          </div>
         </Card>
       </div>
     </div>
@@ -97,13 +102,13 @@
 <script>
 import router from "@/router";
 
-import { hotNewsList } from "@/http/api/commonApi";
+import {hotAdoptList, hotNewsList, hotSeekList} from "@/http/api/commonApi";
+import {ElLoading} from "element-plus";
 
 export default {
   name: "HomeComponent",
   components: {},
   data() {
-    // 白板 https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304
     return {
       urls: [
         {
@@ -116,122 +121,45 @@ export default {
           url: "https://img0.baidu.com/it/u=1329903597,3197318107&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=667",
         },
       ],
-      news: [],
-      news1: [],
-      newAdopts: [
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-      ],
-      newSeeks: [
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-        {
-          url: "https://img1.baidu.com/it/u=1410611840,1889651514&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=304",
-          title: "这是标题信息这是标题信息这是标题信息这是标题信息",
-          time: "3月18日22:02",
-        },
-      ],
+      hotRealTime: [],
+      hotInteresting: [],
+      hotAdopts: [],
+      hotSeeks: [],
+      count: 0,
+      loadingInstance: null
     };
   },
-  created() {
-    hotNewsList(0).then((res) => {
-      console.log(res);
-      this.news = res.content;
+  created: function () {
+    //页面初始化
+    this.loadingInstance = ElLoading.service();
+    hotNewsList(0).then(data => {
+      this.count++
+      this.hotRealTime = data.content;
+      if (this.count === 4) {
+        this.loadingInstance.close();
+      }
     });
-    hotNewsList(1).then((res) => {
-      this.news1 = res.content;
+    hotNewsList(1).then(data => {
+      this.count++
+      this.hotInteresting = data.content;
+      if (this.count === 4) {
+        this.loadingInstance.close();
+      }
     });
+    hotSeekList().then(data => {
+      this.count++
+      this.hotSeeks = data.content
+      if (this.count === 4) {
+        this.loadingInstance.close();
+      }
+    })
+    hotAdoptList().then(data => {
+      this.count++
+      this.hotAdopts = data.content
+      if (this.count === 4) {
+        this.loadingInstance.close();
+      }
+    })
   },
   methods: {
     push(model) {

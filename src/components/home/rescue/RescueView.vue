@@ -30,12 +30,12 @@
       <div style="width: 500px">
         <el-carousel :interval="4000" arrow="always">
           <el-carousel-item v-for="item in rescueDto.imgFiles" :key="item.id">
-            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: contain;">
+            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: cover;object-position: center;">
           </el-carousel-item>
         </el-carousel>
       </div>
       <div style="background-color: gainsboro;width: 200px;height: 200px;position: absolute;right: 0">
-        <img :src="rescueDto.payImgFileDto.filePath" alt="" style="width: 100%; height: 200px; object-fit: contain;">
+        <img :src="rescueDto.payImgFileDto.filePath" alt="" style="width: 100%; height: 200px; object-fit: cover;object-position: center;">
       </div>
       <div style="margin-left: 20px;display:flex;flex-wrap: wrap;width:800px;align-content: space-between;">
         <div class="info-section" style="width: 100%">
