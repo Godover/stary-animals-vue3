@@ -14,7 +14,7 @@ export function rescueListByUserId(page, size) {
 }
 
 // 分页救助列表
-export function rescueList(page, size) {
+export function rescueList(page = 1, size = 999) {
     return service({
         url: "/endpoint/v1/rescue/list",
         method: "POST",
