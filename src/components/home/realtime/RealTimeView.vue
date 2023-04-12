@@ -1,5 +1,18 @@
 <template>
   <div v-if="newsDto!==null">
+    <div style="justify-content: space-between;align-items:center;display: flex">
+      <Breadcrumb>
+        <BreadcrumbItem to="/realtime">
+          <Icon type="ios-home-outline"></Icon>
+          资讯信息
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <span>{{ this.newsDto.title }}</span>
+        </BreadcrumbItem>
+      </Breadcrumb>
+    </div>
+    <el-divider style="margin-top: 15px"/>
+
     <div class="title">{{ this.newsDto.title }}</div>
     <!-- 发布人 -->
     <div class="info-section" style="justify-content: center">

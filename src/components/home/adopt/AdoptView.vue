@@ -1,13 +1,12 @@
 <template>
-  <div style="justify-content: space-between;align-items:center;display: flex">
+  <div style="justify-content: space-between;align-items:center;display: flex" v-if="adoptDto!==null">
     <Breadcrumb>
       <BreadcrumbItem to="/adopt">
         <Icon type="ios-home-outline"></Icon>
-        领养
-      </BreadcrumbItem>
-      <BreadcrumbItem :to="'/adopt_view?id='+this.$route.params.id">
-        <Icon type="ios-home-outline"></Icon>
         领养信息
+      </BreadcrumbItem>
+      <BreadcrumbItem>
+        <span>{{ this.adoptDto.title }}</span>
       </BreadcrumbItem>
     </Breadcrumb>
   </div>
@@ -16,7 +15,7 @@
     <!-- 标题 -->
     <div class="title">
           <span :style="{'color': adoptDto.supply === 0?'#ff1818':'#19be6b','font-size':'26px'}">[{{
-              adoptDto.supply === 0 ? '送养' : '领养'
+              adoptDto.supply === 0 ? '领养' : '送养'
             }}]</span> {{ adoptDto.title }}
       <AdoptStatusComponent :status="adoptDto.status"/>
     </div>
@@ -140,12 +139,6 @@ export default {
     }
   },
   beforeCreate() {
-    const matchedRoutes = this.$route.matched;
-    const paths = matchedRoutes
-        // .filter(record => record.path !== '/')
-        .map(record => record.path);
-    console.log(paths);
-
     this.$nextTick(() => {
       this.InitData()
     });

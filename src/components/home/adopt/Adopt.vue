@@ -15,7 +15,7 @@
     <Row>
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">区县：</Col>
       <Col span="23">
-        <TagSelect v-model="chooseCity" @change="searchInfo">
+        <TagSelect v-if="cityArray.length!==0" v-model="chooseCity" @on-change="searchInfo">
           <TagSelectOption v-for="item in cityArray" :name="item.id">
             <CityComponent :city="item"/>
           </TagSelectOption>
@@ -26,7 +26,7 @@
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">宠类：</Col>
       <Col span="23">
         <!--        expandable-->
-        <TagSelect v-model="chooseCategory" @change="searchInfo">
+        <TagSelect v-if="categoryArray.length!==0" v-model="chooseCategory" @on-change="searchInfo">
           <TagSelectOption v-for="item in categoryArray" :name="item.id">{{ item.name }}</TagSelectOption>
         </TagSelect>
       </Col>
@@ -34,8 +34,7 @@
     <Row class-name="ivu-mt-8">
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">供求：</Col>
       <Col span="23">
-        <!--        expandable-->
-        <TagSelect v-model="chooseType" @change="searchInfo">
+        <TagSelect v-if="typeArray.length!==0" v-model="chooseType" @on-change="searchInfo">
           <TagSelectOption v-for="item in typeArray" :name="item">{{ item === 0 ? '送养' : '领养' }}</TagSelectOption>
         </TagSelect>
       </Col>
@@ -45,7 +44,7 @@
       <TabPane icon="ios-information-circle" label="最新信息" name="name1">
         <div class="cardContainer">
           <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in newsAdopt">
-            <Card :bordered="false" @click="push('/adopt_view?id='+item.id)">
+            <Card :bordered="false" @click="push('/adopt_view/'+item.id)">
               <div style="display: flex">
                 <div style="height: 100px;width: 200px;position: relative;">
                   <img :src="item.imgFiles[0].filePath"
@@ -54,12 +53,12 @@
                 <div class="ivu-ml-16" style="width: 450px">
                   <ul style="list-style: none">
                     <li class="title">
-                      <b v-if="item.type===1" style="color: #19be6b">[领养]</b>
+                      <b v-if="item.supply===0" style="color: #19be6b">[领养]</b>
                       <b v-else style="color: #ed4014">[送养]</b>
                       <b>{{ item.title }}</b>
                     </li>
                     <li class="ivu-mb-8 ivu-mt-4 description">
-                      {{ item.description }}{{ item.description }}{{ item.description }}
+                      {{ item.description }}
                     </li>
                     <li style="position: absolute;bottom: 10px;width: 420px">
                       <el-text>宠类：{{ item.category }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -79,7 +78,7 @@
       <TabPane icon="ios-checkmark-circle" label="已搞定" name="name2">
         <div class="cardContainer">
           <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in overAdopt">
-            <Card :bordered="false">
+            <Card :bordered="false" @click="push('/adopt_view/'+item.id)">
               <div style="display: flex">
                 <div style="height: 100px;width: 200px;position: relative;">
                   <img :src="item.imgFiles[0].filePath"
@@ -91,7 +90,7 @@
                       <b>{{ item.title }}</b>
                     </li>
                     <li class="ivu-mb-8 ivu-mt-4 description">
-                      {{ item.description }}{{ item.description }}{{ item.description }}
+                      {{ item.description }}
                     </li>
                     <li style="position: absolute;bottom: 10px;width: 420px">
                       <el-text>宠类：{{ item.category }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -146,7 +145,18 @@ export default {
     push(model) {
       router.push(model)
     },
+    showLoading() {
+      this.count = 0
+      this.loadingInstance = ElLoading.service();
+    },
+    hideLoading() {
+      this.count++
+      if (this.count === 2) {
+        this.loadingInstance.close();
+      }
+    },
     searchInfo(tags = null) {
+      this.showLoading()
       adoptSearch({
         "page": 1,
         "size": 999,
@@ -155,8 +165,9 @@ export default {
         "supply": this.typeArray,
         "status": [0, 1, 2, 3, 4]
       }).then(data => {
+        this.count++
         this.newsAdopt = data.content
-        this.loadingInstance.close();
+        this.hideLoading()
       })
       adoptSearch({
         "page": 1,
@@ -166,15 +177,17 @@ export default {
         "supply": this.typeArray,
         "status": [3, 4]
       }).then(data => {
+        this.count++
         this.overAdopt = data.content
-        this.loadingInstance.close();
+        this.hideLoading()
       })
     }
   }, created() {
     //页面初始化
-    this.loadingInstance = ElLoading.service();
+    this.showLoading()
     cityList().then(data => {
       this.count++
+      this.chooseCity = data.map(record => record.id)
       this.cityArray = data
       if (this.count === 2) {
         this.searchInfo()
@@ -182,6 +195,7 @@ export default {
     })
     animalsCategoryList().then(data => {
       this.count++
+      this.chooseCategory = data.map(record => record.id)
       this.categoryArray = data
       if (this.count === 2) {
         this.searchInfo()

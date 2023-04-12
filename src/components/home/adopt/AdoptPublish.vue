@@ -1,5 +1,6 @@
 <template>
-  <el-form :model="form" ref="form" :rules="rules" label-width="100px" style="max-width: 1000px; margin: 20px auto;">
+  <el-form v-if="this.animalCategoryArray.length!==0&&this.cityArray.length!==0" :model="form" ref="form" :rules="rules"
+           label-width="100px" style="max-width: 1000px; margin: 20px auto;">
     <el-form-item label="标题" prop="title">
       <el-input v-model="form.title" placeholder="请输入标题"></el-input>
     </el-form-item>
@@ -10,7 +11,7 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="数量" prop="quantity">
-      <el-input-number v-model="form.quantity" :min="1" :max="10" label="数量"></el-input-number>
+      <el-input-number v-model="form.amount" :min="1" :max="10" label="数量"></el-input-number>
     </el-form-item>
     <el-form-item label="年龄" prop="age">
       <el-input-number v-model="form.age" :min="0" :max="30" label="年龄"></el-input-number>
@@ -28,11 +29,10 @@
       <el-input v-model="form.phoneNumber" placeholder="请输入手机号"></el-input>
     </el-form-item>
     <el-form-item label="城市" prop="city">
-      <el-select v-model="form.city" placeholder="请选择城市">
-        <el-option label="北京市" value="beijing"></el-option>
-        <el-option label="上海市" value="shanghai"></el-option>
-        <el-option label="广州市" value="guangzhou"></el-option>
-        <el-option label="深圳市" value="shenzhen"></el-option>
+      <el-select v-if="this.cityArray.length !== 0" v-model="form.city" placeholder="请选择城市">
+        <el-option v-for="item in cityArray" :value="item.id">
+          <CityComponent :city="item"/>
+        </el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="供求类型" prop="supplyDemand">
@@ -42,11 +42,10 @@
       </el-radio-group>
     </el-form-item>
     <el-form-item label="宠物分类" prop="category">
-      <el-select v-model="form.category" placeholder="请选择宠物分类">
-        <el-option label="猫" value="cat"></el-option>
-        <el-option label="狗" value="dog"></el-option>
-        <el-option label="兔子" value="rabbit"></el-option>
-        <el-option label="其他" value="other"></el-option>
+      <el-select v-if="this.animalCategoryArray.length !== 0" v-model="form.category" placeholder="请选择宠物分类">
+        <el-option v-for="item in animalCategoryArray" :value="item.id">
+          {{ item.name }}
+        </el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="驱虫状态" prop="isDewormed">
@@ -79,26 +78,30 @@
   </el-form>
 </template>
 <script>
+import CityComponent from "@/components/home/CityComponent";
+import {animalsCategoryList, cityList} from "@/http/api/commonApi";
+
 export default {
   name: 'AdoptPublish',
+  components: {CityComponent},
   data() {
     return {
       form: {
-        id: null,
-        title: '',
-        gender: '',
-        quantity: 1,
-        age: '',
-        description: '',
-        contactPerson: '',
-        weChat: '',
-        phoneNumber: '',
-        city: '',
-        supplyDemand: '',
-        category: '',
-        isDewormed: '',
-        isVaccinated: '',
-        images: []
+        "id": this.$route.params.id === undefined ? null : this.$route.params.id,
+        "age": 1,
+        "amount": 1,
+        "animalCategoryId": 0,
+        "cityId": 0,
+        "description": "string",
+        "expellingParasite": 0,
+        "personName": "string",
+        "phone": "string",
+        "sex": 0,
+        "supply": 0,
+        "title": "string",
+        "vaccine": 0,
+        "weChat": "string",
+        "imgFileIds": []
       },
       rules: {
         title: [
@@ -143,7 +146,9 @@ export default {
         images: [
           {required: true, message: '请上传图片', trigger: 'change'}
         ]
-      }
+      },
+      cityArray: [],
+      animalCategoryArray: [],
     }
   },
   methods: {
@@ -166,6 +171,16 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     }
+  },
+  created() {
+    cityList().then(data => {
+      this.form.cityId = data[0].id
+      this.cityArray = data
+    })
+    animalsCategoryList().then(data => {
+      this.form.animalCategoryId = data[0].id
+      this.animalCategoryArray = data
+    })
   }
 }
 </script>

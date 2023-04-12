@@ -108,37 +108,37 @@ const routes = [
                     },
                 ]
             }, {
-                path: 'adopt_publish',
+                path: 'adopt_publish/:id',
                 component: AdoptPublish,
                 name: '领养发布',
                 props: true
             }, {
-                path: 'adopt_view',
+                path: 'adopt_view/:id',
                 component: AdoptView,
                 name: '领养信息',
                 props: true
             }, {
-                path: 'seek_publish',
+                path: 'seek_publish/:id',
                 component: SeekPublish,
                 name: '寻宠发布',
                 props: true
             }, {
-                path: 'seek_view',
+                path: 'seek_view/:id',
                 component: SeekView,
                 name: '寻宠信息',
                 props: true
             }, {
-                path: 'rescue_publish',
+                path: 'rescue_publish/:id',
                 component: RescuePublish,
                 name: '救助发布',
                 props: true
             }, {
-                path: 'rescue_view',
+                path: 'rescue_view/:id',
                 component: RescueView,
                 name: '救助信息',
                 props: true
             }, {
-                path: 'realtime_view',
+                path: 'realtime_view/:id',
                 component: RealTimeView,
                 name: '资讯信息',
                 props: true

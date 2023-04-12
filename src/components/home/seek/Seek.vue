@@ -55,7 +55,7 @@
     <div style="display: flex">
       <div class="cardContainer">
         <div style="background:#f8f8f8;padding: 4px;width: 900px" v-for="item in infoArray">
-          <Card :bordered="false" @click="push('seek_view?id='+item.id)">
+          <Card :bordered="false" @click="push('seek_view/'+item.id)">
             <div style="display: flex">
               <div style="height: 100px;width: 200px;position: relative;">
                 <img :src="item.imgFiles[0].filePath"
