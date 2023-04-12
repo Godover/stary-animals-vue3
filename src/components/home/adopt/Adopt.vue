@@ -8,7 +8,7 @@
         </BreadcrumbItem>
       </Breadcrumb>
       <div class="ivu-fr" style="display: flex">
-        <Button type="primary" @click="push('/adopt_publish')">发布领养</Button>
+        <Button type="primary" @click="push('/adopt_publish/0')">发布领养</Button>
       </div>
     </div>
     <el-divider style="margin-top: 15px"/>
