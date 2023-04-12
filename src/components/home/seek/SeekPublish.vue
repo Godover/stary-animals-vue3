@@ -133,6 +133,7 @@ export default {
   },
   created() {
     //编辑的时候图片列表赋值
+    // if (this.$route.params.id == 0) 这一句判断是编辑还是新增
     this.uploadImages = [];
     let imgs = this.form.imgFileIds.split(",");
     imgs.map((item) => {
