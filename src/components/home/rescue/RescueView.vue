@@ -1,5 +1,17 @@
 <template>
   <div class="left-section" style="margin-bottom: 50px" v-if="rescueDto!==null">
+    <div style="justify-content: space-between;align-items:center;display: flex">
+      <Breadcrumb>
+        <BreadcrumbItem to="/rescue">
+          <Icon type="ios-home-outline"></Icon>
+          救助信息
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <span>{{ this.rescueDto.title }}</span>
+        </BreadcrumbItem>
+      </Breadcrumb>
+    </div>
+    <el-divider style="margin-top: 15px"/>
     <!-- 标题 -->
     <div class="title">
       <span style="color: orange;font-size: 26px">[救助]</span> {{ rescueDto.title }}

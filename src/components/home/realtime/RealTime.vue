@@ -15,7 +15,7 @@
     <el-tab-pane v-for="item in newsCategoryList" :label="item.name" :name="item.id"/>
   </el-tabs>
   <div v-for="item in newInfos">
-    <div style="background:#f8f8f8;padding: 4px" @click="push('/realtime_view?id='+item.id)">
+    <div style="background:#f8f8f8;padding: 4px" @click="push('/realtime_view/'+item.id)">
       <Card>
         <div style="display: flex">
           <div style="height: 100px;width: 200px;position: relative;">

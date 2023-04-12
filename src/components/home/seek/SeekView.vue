@@ -1,5 +1,17 @@
 <template>
   <div class="left-section" style="margin-bottom: 50px" v-if="seekDto!==null">
+    <div style="justify-content: space-between;align-items:center;display: flex">
+      <Breadcrumb>
+        <BreadcrumbItem to="/seek">
+          <Icon type="ios-home-outline"></Icon>
+          寻宠信息
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <span>{{ this.seekDto.title }}</span>
+        </BreadcrumbItem>
+      </Breadcrumb>
+    </div>
+    <el-divider style="margin-top: 15px"/>
     <!-- 标题 -->
     <div class="title">
           <span :style="{'color': seekDto.type?'#ff1818':'#19be6b','font-size':'26px'}">[{{

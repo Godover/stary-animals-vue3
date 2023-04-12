@@ -13,7 +13,7 @@
   <el-divider style="margin-top: 15px"/>
   <div class="cardContainer">
     <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in infoArray">
-      <Card :bordered="false" @click="push('/rescue_view?id='+item.id)">
+      <Card :bordered="false" @click="push('/rescue_view/'+item.id)">
         <div style="display: flex">
           <div style="height: 100px;width: 200px;position: relative;">
             <img :src="item.imgFiles[0].filePath"

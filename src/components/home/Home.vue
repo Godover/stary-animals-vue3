@@ -25,7 +25,7 @@
             <li
                 v-for="item in hotRealTime"
                 style="align-items: center; user-select: none"
-                @click="push('/realtime_view?id=' + item.id)">
+                @click="push('/realtime_view/' + item.id)">
               <el-text tag="b" class="w-350px" truncated>
                 {{ item.title }}
               </el-text>
@@ -41,7 +41,7 @@
             <ul>
               <li
                   v-for="item in hotInteresting"
-                  @click="push('/realtime_view?id=' + item.id)">
+                  @click="push('/realtime_view/' + item.id)">
                 <el-text tag="b" truncated>{{ item.title }}</el-text>
               </li>
             </ul>
@@ -54,7 +54,7 @@
       <div
           v-for="item in hotAdopts"
           style="width: 255px; user-select: none"
-          @click="push('/adopt_view?id=' + item.id)">
+          @click="push('/adopt_view/' + item.id)">
         <div style="background: #f8f8f8; padding: 3px">
           <Card :bordered="false">
             <template #title>
@@ -80,7 +80,7 @@
       <div
           v-for="item in hotSeeks"
           style="width: 255px; background: #f8f8f8; padding: 3px"
-          @click="push('/seek_view?id=' + item.id)">
+          @click="push('/seek_view/' + item.id)">
         <Card :bordered="false">
           <template #title>
             <el-text size="small" style="width: 150px" truncated>{{
