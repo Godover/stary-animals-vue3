@@ -2,7 +2,7 @@
   <div>
     <div style="justify-content: space-between;align-items:center;display: flex">
       <Breadcrumb>
-        <BreadcrumbItem to="/realTimeInfo">
+        <BreadcrumbItem to="/seek">
           <Icon type="ios-home-outline"></Icon>
           寻宠信息
         </BreadcrumbItem>

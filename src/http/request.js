@@ -47,7 +47,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
     response => {
-        console.log(response)
+        console.log("response=>", response)
         if (response.data.success === true) {
             return response.data.data;
         }

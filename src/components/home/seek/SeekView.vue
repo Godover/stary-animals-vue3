@@ -29,7 +29,8 @@
       <div style="width: 500px">
         <el-carousel :interval="4000" arrow="always">
           <el-carousel-item v-for="item in seekDto.imgFiles" :key="item.id">
-            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: cover;object-position: center">
+            <img :src="item.filePath" alt=""
+                 style="width: 100%; height: 300px; object-fit: cover;object-position: center">
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -94,12 +95,6 @@ import SeekStatusComponent from "@/components/home/seek/SeekStatusComponent";
 export default {
   name: 'SeekView',
   components: {SeekStatusComponent, CommentComponent},
-  props: {
-    id: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
     return {
       loadingInstance: null,
@@ -110,7 +105,7 @@ export default {
     InitData() {
       //页面初始化
       this.loadingInstance = ElLoading.service();
-      seekById(this.id)
+      seekById(this.$route.params.id)
           .then(data => {
             this.seekDto = data
             this.loadingInstance.close();
@@ -118,6 +113,11 @@ export default {
     }
   },
   beforeCreate() {
+    const matchedRoutes = this.$route.matched;
+    const paths = matchedRoutes
+        // .filter(record => record.path !== '/')
+        .map(record => record.path);
+    console.log(matchedRoutes);
     this.$nextTick(() => {
       this.InitData()
     });

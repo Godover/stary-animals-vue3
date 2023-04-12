@@ -38,12 +38,6 @@ export default {
   name: 'RealTimeView',
   // import引入的组件需要注入到对象中才能使用
   components: {CommentComponent},
-  props: {
-    id: {
-      type: Number,
-      required: true
-    }
-  },
   // 这里存放数据
   data() {
     return {
@@ -55,7 +49,7 @@ export default {
   created() {
     //页面初始化
     this.loadingInstance = ElLoading.service();
-    newsById(this.id)
+    newsById(this.$route.params.id)
         .then(data => {
           this.newsDto = data
           this.loadingInstance.close();

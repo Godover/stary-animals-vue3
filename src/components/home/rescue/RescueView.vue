@@ -89,12 +89,6 @@ import RescueStatusComponent from "@/components/home/rescue/RescueStatusComponen
 export default {
   name: 'RescueView',
   components: {RescueStatusComponent, CommentComponent},
-  props: {
-    id: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
     return {
       loadingInstance: null,
@@ -105,7 +99,7 @@ export default {
     InitData() {
       //页面初始化
       this.loadingInstance = ElLoading.service();
-      rescueById(this.id)
+      rescueById(this.$route.params.id)
           .then(data => {
             this.rescueDto = data
             this.loadingInstance.close();

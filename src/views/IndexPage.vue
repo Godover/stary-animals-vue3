@@ -4,53 +4,52 @@
       <Header :style="{position: 'fixed', width: '100%','z-index':999,margin: '-1px 0'}">
         <Menu mode="horizontal" active-name="首页" class="menu-bg">
           <div class="layout-logo">
-                        流浪动物救助及领养平台
+            流浪动物救助及领养平台
           </div>
           <Row>
             <Col span="9"/>
             <Col span="2">
               <MenuItem name="首页" @click="push('/home')">
-                                <b>首页</b>
-<!--                <b>A</b>-->
+                <b>首页</b>
+                <!--                <b>A</b>-->
               </MenuItem>
             </Col>
             <Col span="2">
               <MenuItem name="资讯" @click="push('/realtime')">
-                                <b>资讯</b>
-<!--                <b>B</b>-->
+                <b>资讯</b>
+                <!--                <b>B</b>-->
               </MenuItem>
             </Col>
             <Col span="2">
               <MenuItem name="领养" @click="push('/adopt')">
-                                <b>领养</b>
-<!--                <b>C</b>-->
+                <b>领养</b>
+                <!--                <b>C</b>-->
               </MenuItem>
             </Col>
             <Col span="2">
               <MenuItem name="寻宠" @click="push('/seek')">
-                                <b>寻宠</b>
-<!--                <b>D</b>-->
+                <b>寻宠</b>
+                <!--                <b>D</b>-->
               </MenuItem>
             </Col>
             <Col span="2">
               <MenuItem name="救助" @click="push('/rescue')">
-                                <b>救助</b>
-<!--                <b>E</b>-->
+                <b>救助</b>
+                <!--                <b>E</b>-->
               </MenuItem>
             </Col>
             <Col span="2">
               <MenuItem name="帮助" @click="push('/help')">
-                                <b>帮助</b>
-<!--                <b>F</b>-->
+                <b>帮助</b>
+                <!--                <b>F</b>-->
               </MenuItem>
             </Col>
             <Col span="1"/>
             <Col span="1">
               <Dropdown style="margin-left: 20px;">
                 <div style="display: flex">
-                  <span>{{userInfo}}</span>
                   <Space size="large">
-                    <Avatar v-if="circleUrl !== ''" icon="ios-person" size="large" :src="circleUrl"/>
+                    <Avatar v-if="userInfo.photoFileDto !== null" icon="ios-person" size="large" :src="circleUrl"/>
                     <Avatar v-else icon="ios-person" size="large"/>
                   </Space>
                 </div>
@@ -112,7 +111,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'isLogin'
+      'isLogin',
+      'userInfo'
     ]),
   }
 }

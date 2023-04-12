@@ -15,8 +15,10 @@
     <Row>
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">区县：</Col>
       <Col span="23">
-        <TagSelect v-model="chooseCity">
-          <TagSelectOption v-for="item in cityArray" :name="item">{{ item }}</TagSelectOption>
+        <TagSelect v-model="chooseCity" @change="searchInfo">
+          <TagSelectOption v-for="item in cityArray" :name="item.id">
+            <CityComponent :city="item"/>
+          </TagSelectOption>
         </TagSelect>
       </Col>
     </Row>
@@ -24,8 +26,8 @@
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">宠类：</Col>
       <Col span="23">
         <!--        expandable-->
-        <TagSelect v-model="chooseCategory">
-          <TagSelectOption v-for="item in categoryArray" :name="item">{{ item }}</TagSelectOption>
+        <TagSelect v-model="chooseCategory" @change="searchInfo">
+          <TagSelectOption v-for="item in categoryArray" :name="item.id">{{ item.name }}</TagSelectOption>
         </TagSelect>
       </Col>
     </Row>
@@ -33,8 +35,8 @@
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">供求：</Col>
       <Col span="23">
         <!--        expandable-->
-        <TagSelect v-model="chooseType">
-          <TagSelectOption v-for="item in typeArray" :name="item">{{ item }}</TagSelectOption>
+        <TagSelect v-model="chooseType" @change="searchInfo">
+          <TagSelectOption v-for="item in typeArray" :name="item">{{ item === 0 ? '送养' : '领养' }}</TagSelectOption>
         </TagSelect>
       </Col>
     </Row>
@@ -49,7 +51,7 @@
                   <img :src="item.imgFiles[0].filePath"
                        style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
                 </div>
-                <div class="ivu-ml-16">
+                <div class="ivu-ml-16" style="width: 450px">
                   <ul style="list-style: none">
                     <li class="title">
                       <b v-if="item.type===1" style="color: #19be6b">[领养]</b>
@@ -83,7 +85,7 @@
                   <img :src="item.imgFiles[0].filePath"
                        style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
                 </div>
-                <div class="ivu-ml-16">
+                <div class="ivu-ml-16" style="width: 450px">
                   <ul style="list-style: none">
                     <li class="title">
                       <b>{{ item.title }}</b>
@@ -118,41 +120,73 @@
 import router from "@/router";
 import AdoptStatusComponent from "@/components/home/adopt/AdoptStatusComponent";
 import {animalsCategoryList, cityList} from "@/http/api/commonApi";
+import {adoptSearch} from "@/http/api/adoptApi";
+import {ElLoading} from "element-plus";
+import CityComponent from "@/components/home/CityComponent";
 
 export default {
   name: 'AdoptComponent',
-  components: {AdoptStatusComponent},
+  components: {CityComponent, AdoptStatusComponent},
   data() {
     // "綦江区", "大足区", "渝北区", "巴南区", "黔江区", "长寿区", "江津区"
     return {
-      chooseCity: ["万州区", "涪陵区", "渝中区", "大渡口区", "江北区", "沙坪坝区", "九龙坡区", "南岸区", "北碚区"],
-      chooseCategory: ["狗狗", "猫咪", "鸟", "鱼", "小宠", "其他"],
-      chooseType: ["送养", "领养"],
-      cityArray: ["万州区", "涪陵区", "渝中区", "大渡口区", "江北区", "沙坪坝区", "九龙坡区", "南岸区", "北碚区"],
-      categoryArray: ["狗狗", "猫咪", "鸟", "鱼", "小宠", "其他"],
-      typeArray: ["送养", "领养"],
+      chooseCity: [],
+      chooseCategory: [],
+      chooseType: [0, 1],
+      cityArray: [],
+      categoryArray: [],
+      typeArray: [0, 1],
       newsAdopt: [],
       overAdopt: [],
-      count: 0
+      count: 0,
+      loadingInstance: null
     }
   },
   methods: {
     push(model) {
       router.push(model)
     },
-    searchInfo() {
-
+    searchInfo(tags = null) {
+      adoptSearch({
+        "page": 1,
+        "size": 999,
+        "city": this.chooseCity,
+        "types": this.chooseCategory,
+        "supply": this.typeArray,
+        "status": [0, 1, 2, 3, 4]
+      }).then(data => {
+        this.newsAdopt = data.content
+        this.loadingInstance.close();
+      })
+      adoptSearch({
+        "page": 1,
+        "size": 999,
+        "city": this.chooseCity,
+        "types": this.chooseCategory,
+        "supply": this.typeArray,
+        "status": [3, 4]
+      }).then(data => {
+        this.overAdopt = data.content
+        this.loadingInstance.close();
+      })
     }
   }, created() {
+    //页面初始化
+    this.loadingInstance = ElLoading.service();
     cityList().then(data => {
       this.count++
       this.cityArray = data
+      if (this.count === 2) {
+        this.searchInfo()
+      }
     })
     animalsCategoryList().then(data => {
       this.count++
       this.categoryArray = data
+      if (this.count === 2) {
+        this.searchInfo()
+      }
     })
-    this.searchInfo()
   }
 }
 </script>

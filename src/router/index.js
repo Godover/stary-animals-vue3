@@ -37,99 +37,124 @@ const routes = [
         children: [
             {
                 path: 'home',
+                name: '首页',
                 component: Home,
             }, {
                 path: 'adopt',
+                name: '领养',
                 component: Adopt,
             }, {
                 path: 'realtime',
+                name: '资讯',
                 component: RealTime,
             }, {
                 path: 'seek',
+                name: '寻宠',
                 component: Seek,
             }, {
                 path: 'rescue',
+                name: '救助',
                 component: Rescue,
             }, {
                 path: 'help',
+                name: '帮助',
                 component: Help,
             }, {
                 path: 'edit_user_info',
+                name: '用户信息',
                 component: EditUserInfo,
             }, {
                 path: 'message',
+                name: '消息',
                 component: MyMessage,
             }, {
                 path: 'info_manager',
                 redirect: '/info_manager/adopt',
                 component: InfoManager,
+                name: '管理',
                 children: [
                     {
-                        path: '/info_manager/adopt',
+                        path: 'adopt',
+                        name: '领养管理',
                         component: AdoptManager,
                     }, {
-                        path: '/info_manager/seek',
+                        path: 'seek',
+                        name: '寻宠管理',
                         component: SeekManager,
                     }, {
-                        path: '/info_manager/rescue',
+                        path: 'rescue',
+                        name: '救助管理',
                         component: RescueManager,
                     }, {
-                        path: '/info_manager/news',
+                        path: 'news',
+                        name: '资讯管理',
                         component: NewsManager,
                     }, {
-                        path: '/info_manager/comment',
+                        path: 'comment',
+                        name: '评论管理',
                         component: CommentManager,
                     }, {
-                        path: '/info_manager/user',
+                        path: 'user',
+                        name: '用户管理',
                         component: UserManager,
                     }, {
-                        path: '/info_manager/base',
+                        path: 'base',
+                        name: '基础数据管理',
                         component: BaseDataManager,
                     }, {
-                        path: '/info_manager/help',
+                        path: 'help',
+                        name: '帮助管理',
                         component: HelpManager,
                     },
                 ]
             }, {
                 path: 'adopt_publish',
                 component: AdoptPublish,
+                name: '领养发布',
                 props: true
             }, {
                 path: 'adopt_view',
                 component: AdoptView,
+                name: '领养信息',
                 props: true
             }, {
                 path: 'seek_publish',
                 component: SeekPublish,
+                name: '寻宠发布',
                 props: true
             }, {
                 path: 'seek_view',
                 component: SeekView,
+                name: '寻宠信息',
                 props: true
             }, {
                 path: 'rescue_publish',
                 component: RescuePublish,
+                name: '救助发布',
                 props: true
             }, {
                 path: 'rescue_view',
                 component: RescueView,
+                name: '救助信息',
                 props: true
             }, {
                 path: 'realtime_view',
                 component: RealTimeView,
+                name: '资讯信息',
                 props: true
             }, {
                 path: 'realtime_publish',
+                name: '资讯发布',
                 component: RealTimePublish
             }
         ]
     }, {
         path: '/register',
-        name: 'register',
+        name: '注册',
         component: Register
     }, {
         path: '/login',
-        name: 'login',
+        name: '登录',
         component: Login
     }
 ]
@@ -141,5 +166,17 @@ const router = createRouter({
         return {top: 0}
     }
 })
+
+// router.beforeEach((to, from, next) => {
+// 在这里进行路由拦截和导航控制逻辑
+// console.log("to", to, "from", from, "next", next)
+// const breadcrumb = []
+// breadcrumb.push({label: from.name, link: from.fullPath});
+// breadcrumb.push({label: to.name, link: to.fullPath});
+// console.log("breadcrumb", breadcrumb)
+// next(vm => {
+//     vm.breadcrumb = breadcrumb;
+// })
+// })
 
 export default router

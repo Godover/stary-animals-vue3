@@ -21,7 +21,6 @@
           class="comment-pagination"
           :current-page="currentPage"
           :page-size="pageSize"
-          :pager-count="10"
           layout="prev, pager, next"
           :total="total"
           @current-change="handleCurrentChange"

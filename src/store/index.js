@@ -13,7 +13,7 @@ export default createStore({
             return state.userInfo.isAdmin !== undefined ? state.userInfo.isAdmin === true : 'false';
         },
         userInfo(state) {
-            return state.userInfo.isAdmin !== undefined ? state.userInfo.isAdmin === true : 'false';
+            return state.userInfo;
         },
     },
     mutations: {

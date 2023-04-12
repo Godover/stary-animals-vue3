@@ -1,4 +1,17 @@
 <template>
+  <div style="justify-content: space-between;align-items:center;display: flex">
+    <Breadcrumb>
+      <BreadcrumbItem to="/adopt">
+        <Icon type="ios-home-outline"></Icon>
+        领养
+      </BreadcrumbItem>
+      <BreadcrumbItem :to="'/adopt_view?id='+this.$route.params.id">
+        <Icon type="ios-home-outline"></Icon>
+        领养信息
+      </BreadcrumbItem>
+    </Breadcrumb>
+  </div>
+  <el-divider style="margin-top: 15px"/>
   <div class="left-section" style="margin-bottom: 50px" v-if="adoptDto!==null">
     <!-- 标题 -->
     <div class="title">
@@ -29,7 +42,8 @@
       <div style="width: 500px">
         <el-carousel :interval="4000" arrow="always">
           <el-carousel-item v-for="item in adoptDto.imgFiles" :key="item.id">
-            <img :src="item.filePath" alt="" style="width: 100%; height: 300px; object-fit: cover;object-position: center;  ">
+            <img :src="item.filePath" alt=""
+                 style="width: 100%; height: 300px; object-fit: cover;object-position: center;  ">
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -107,23 +121,18 @@ import {ElLoading} from 'element-plus';
 export default {
   name: 'AdoptView',
   components: {AdoptStatusComponent, CommentComponent},
-  props: {
-    id: {
-      type: Number,
-      required: true
-    }
-  },
   data() {
     return {
       loadingInstance: null,
-      adoptDto: null
+      adoptDto: null,
+      breadcrumb: []
     }
   },
   methods: {
     InitData() {
       //页面初始化
       this.loadingInstance = ElLoading.service();
-      adoptById(this.id)
+      adoptById(this.$route.params.id)
           .then(data => {
             this.adoptDto = data
             this.loadingInstance.close();
@@ -131,11 +140,18 @@ export default {
     }
   },
   beforeCreate() {
+    const matchedRoutes = this.$route.matched;
+    const paths = matchedRoutes
+        // .filter(record => record.path !== '/')
+        .map(record => record.path);
+    console.log(paths);
+
     this.$nextTick(() => {
       this.InitData()
     });
   }
-};
+}
+;
 </script>
 
 <style scoped>

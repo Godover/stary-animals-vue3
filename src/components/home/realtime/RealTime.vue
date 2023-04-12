@@ -1,7 +1,7 @@
 <template>
   <div style="justify-content: space-between;align-items:center;display: flex">
     <Breadcrumb>
-      <BreadcrumbItem to="/realTimeInfo">
+      <BreadcrumbItem to="/realtime">
         <Icon type="ios-home-outline"></Icon>
         资讯信息
       </BreadcrumbItem>
