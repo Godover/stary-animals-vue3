@@ -159,6 +159,7 @@ export default {
 
 .menu-bg {
   background-color: #2b85e4 !important;
+  user-select: none;
 }
 
 .layout-logo {
