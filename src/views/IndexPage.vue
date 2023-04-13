@@ -2,7 +2,7 @@
   <div class="layout">
     <Layout>
       <Header :style="{position: 'fixed', width: '100%','z-index':999,margin: '-1px 0'}">
-        <Menu mode="horizontal" active-name="首页" class="menu-bg">
+        <Menu mode="horizontal" :active-name="activeMenu" class="menu-bg">
           <div class="layout-logo">
             流浪动物救助及领养平台
           </div>
@@ -91,6 +91,7 @@ export default {
     return {
       // circleUrl: '',
       circleUrl: 'http://www.zhenpet.com/uc_server/data/avatar/000/51/82/86_avatar_middle.jpg',
+      activeMenu: "首页"
     }
   },
   methods: {
@@ -107,7 +108,38 @@ export default {
     push(model) {
       router.push(model)
     },
+    refreshRoute(path) {
+      if (path.toString().startsWith("/home")) {
+        this.activeMenu = "首页";
+      } else if (path.toString().startsWith("/realtime")) {
+        this.activeMenu = "资讯";
+      } else if (path.toString().startsWith("/adopt")) {
+        this.activeMenu = "领养";
+      } else if (path.toString().startsWith("/seek")) {
+        this.activeMenu = "寻宠";
+      } else if (path.toString().startsWith("/rescue")) {
+        this.activeMenu = "救助";
+      } else if (path.toString().startsWith("/help")) {
+        this.activeMenu = "帮助";
+      } else {
+        this.activeMenu = "";
+      }
+    },
     ...mapMutations(['setUserInfo'])
+  },
+  watch: {
+    $route: {
+      handler(val, oldval) {
+        this.refreshRoute(val.path)
+      },
+      // 深度观察监听
+      deep: true
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.refreshRoute(to.path)
+    });
   },
   computed: {
     ...mapGetters([
