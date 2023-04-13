@@ -51,13 +51,15 @@
 import router from "@/router";
 import {rescueList} from "@/http/api/rescueApi";
 import CityComponent from "@/components/home/CityComponent";
+import {ElLoading} from "element-plus";
 
 export default {
   name: 'RescueComponent',
   components: {CityComponent},
   data() {
     return {
-      infoArray: []
+      infoArray: [],
+      loadingInstance: null
     }
   },
   methods: {
@@ -65,9 +67,12 @@ export default {
       router.push(model)
     }
   }, created() {
-    rescueList().then(data => {
-      this.infoArray = data.content
-    })
+    this.loadingInstance = ElLoading.service();
+    rescueList()
+        .then(data => {
+          this.infoArray = data.content
+          this.loadingInstance.close()
+        })
   }
 }
 </script>

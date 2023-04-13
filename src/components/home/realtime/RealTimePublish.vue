@@ -5,27 +5,38 @@
         <el-input v-model="news.title"></el-input>
       </el-form-item>
       <el-form-item label="分类">
-        <el-select v-model="news.category">
-          <el-option label="政治" value="politics"></el-option>
-          <el-option label="经济" value="economy"></el-option>
-          <el-option label="文化" value="culture"></el-option>
-          <el-option label="科技" value="technology"></el-option>
+        <el-select v-model="chooseNews">
+          <el-option v-for="item in newsArr" :label="item.name" :value="item.name"
+                     @click="this.form.newCategoryId = item.id"></el-option>
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="内容">
-        <div style="width: 800px;height: 300px" id="editor" ref="editor"></div>
-      </el-form-item> -->
       <el-form-item label="内容">
         <textarea
-          v-model="news.content"
-          rows="10"
-          cols="20"
-          class="textareaStyle"
-        >
+            v-model="news.content"
+            rows="10"
+            cols="20"
+            class="textareaStyle">
           问问请问
         </textarea>
       </el-form-item>
+      <el-form-item label="首页图片" prop="receipt">
+        <el-upload
+            class="upload-demo"
+            action="/upload"
+            :on-success="handleUploadSuccess"
+            :limit="1"
+            :before-upload="beforeUpload"
+            :file-list="files"
+            list-type="picture">
+          <el-button slot="upload" size="small" type="success">上传文件
+          </el-button>
+          <div slot="tip" class="el-upload__tip">
+            &nbsp;&nbsp;只能上传jpg/png文件，且不超过5MB
+          </div>
+        </el-upload>
+      </el-form-item>
     </el-form>
+
     <div style="margin-top: 20px; margin-left: 55px">
       <el-button type="primary" @click="submitForm">发布</el-button>
       <el-button @click="resetForm">重置</el-button>
@@ -34,55 +45,29 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted } from "vue";
-import {
-  ElForm,
-  ElFormItem,
-  ElInput,
-  ElSelect,
-  ElOption,
-  ElButton,
-} from "element-plus";
-import Quill from "quill";
+import {defineComponent, onMounted, ref} from "vue";
+import {newsCategoryList} from "@/http/api/commonApi";
 
 export default defineComponent({
-  components: {
-    ElForm,
-    ElFormItem,
-    ElInput,
-    ElSelect,
-    ElOption,
-    ElButton,
-  },
   setup() {
     const news = ref({
-      title: "",
-      category: "",
-      content: "",
-    });
-
-    let quillEditor = null;
+      "content": "",
+      "description": "",
+      "fileId": 0,
+      "newCategoryId": 0,
+      "title": "",
+      fileDto: {}
+    })
+    const newsArr = ref([])
+    const files = ref([])
+    const chooseNews = ref('')
 
     onMounted(() => {
-      quillEditor = new Quill(document.querySelector("#editor"), {
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, 3, 4, 5, 6, true] }],
-            ["bold", "italic", "underline", "strike"],
-            [{ color: [] }, { background: [] }],
-            [{ align: [] }],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["link", "image", "video"],
-            ["clean"],
-          ],
-        },
-      });
-
-      quillEditor.on("text-change", () => {
-        news.value.content = quillEditor.root.innerHTML;
-      });
+      newsCategoryList().then(data => {
+        newsArr.value = data
+        chooseNews.value = data[0].name
+      })
     });
-
     const submitForm = () => {
       const form = document.getElementById("form");
       form.validate().then((valid) => {
@@ -100,13 +85,34 @@ export default defineComponent({
     const resetForm = () => {
       const form = document.getElementById("form");
       form.resetFields();
-      quillEditor.setContents([{ insert: "\n" }]);
     };
+
+    const handleUploadSuccess = (response, file, fileList) => {
+      console.log(response, file, fileList);
+    }
+    const beforeUpload = (file) => {
+      const isJpgOrPng =
+          file.type === "image/jpeg" || file.type === "image/png";
+      const isLt5M = file.size / 1024 / 1024 < 5;
+
+      if (!isJpgOrPng) {
+        this.$message.error("上传图片只能是 JPG/PNG 格式!");
+      }
+      if (!isLt5M) {
+        this.$message.error("上传图片大小不能超过 5MB!");
+      }
+      return isJpgOrPng && isLt5M;
+    }
 
     return {
       news,
       submitForm,
       resetForm,
+      newsArr,
+      chooseNews,
+      handleUploadSuccess,
+      beforeUpload,
+      files
     };
   },
 });

@@ -131,7 +131,6 @@ export default {
   },
   methods: {
     searchInfo(seekStatus = null) {
-      console.log(seekStatus)
       //页面初始化
       this.loadingInstance = ElLoading.service();
       seekSearch({
@@ -152,6 +151,7 @@ export default {
     }
   },
   created() {
+    this.loadingInstance = ElLoading.service();
     hotSeekList().then(data => {
       this.hotList = data.content
     })
