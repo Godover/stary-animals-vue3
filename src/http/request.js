@@ -57,6 +57,7 @@ service.interceptors.response.use(
     },
     error => {
         if (error && error.response) {
+            // todo: @ysz 异常码全局封装，此处存在问题
             switch (error.response.code) {
                 case 400:
                     error.message = '请求错误';
