@@ -11,7 +11,7 @@
       <template #introduction="{ row }">
         <Ellipsis :text="row.introduction" :lines="1" tooltip/>
       </template>
-      <!-- 宠类-->
+      <!-- 新闻分类-->
       <template #animalCategory="{ row }">
         <Ellipsis :text="row.animalCategoryDto.name" :lines="1" tooltip/>
       </template>
@@ -44,28 +44,25 @@
 
 <script>
 import {adoptListByUserId} from "@/http/api/adoptApi";
+import {mapGetters} from "vuex";
+import router from "@/router";
 
 export default {
-  name: 'AdoptManagerComponent',
+  name: 'HelpManagerComponent',
   components: {},
   data() {
     return {
       loading: true,
-      columns: [{"title": "标题", "width": 200, "slot": "title"}, {
-        "title": "描述",
-        "width": 240,
-        "slot": "introduction"
-      }, {"title": "宠类", "width": 80, "slot": "animalCategory"}, {
-        "title": "供求",
-        "width": 70,
-        "align": "center",
-        "slot": "supply"
-      }, {"title": "发布人", "width": 130, "slot": "userInfo"}, {"title": "发布时间", "slot": "gmtCreate"}, {
-        "title": "审核状态1",
-        "width": 90,
-        "align": "center",
-        "slot": "verifyInfo"
-      }, {"title": "操作", "slot": "action", "width": 80, "align": "center"}],
+      columns: [
+        {"title": "标题", "width": 200, "slot": "title"},
+        {"title": "描述", "width": 240, "slot": "introduction"},
+        {"title": "宠类", "width": 80, "slot": "animalCategory"},
+        {"title": "供求", "width": 70, "align": "center", "slot": "supply"},
+        {"title": "发布人", "width": 130, "slot": "userInfo"},
+        {"title": "发布时间", "slot": "gmtCreate"},
+        {"title": "审核状态1", "width": 90, "align": "center", "slot": "verifyInfo"},
+        {"title": "操作", "slot": "action", "width": 80, "align": "center"}
+      ],
       data: []
     }
   },
@@ -85,11 +82,15 @@ export default {
       this.data.splice(index, 1);
     }
   },
-  beforeCreate() {
+  created() {
     //页面初始化
-    this.$nextTick(() => {
-      this.InitData();
-    });
+    if (!this.isAdmin) {
+      router.push('/home')
+    }
+    this.InitData();
+  },
+  computed: {
+    ...mapGetters(['isAdmin', 'userInfo'])
   }
 }
 </script>

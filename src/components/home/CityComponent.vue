@@ -1,9 +1,10 @@
 <template>
-  <span>
-    {{ this.city.province }}{{ this.city.province !== null ? '/' : '' }}{{
-      this.city.city
-    }}{{ this.city.city !== null ? '/' : '' }}{{ this.city.county }}
+  <span v-if="this.city!==null">
+    {{ this.city.province !== null ? this.city.province : '' }}{{ this.city.province !== null ? '/' : '' }}
+    {{ this.city.city !== null ? this.city.city : '' }}{{ this.city.city !== null ? '/' : '' }}
+    {{ this.city.county !== null ? this.city.county : '' }}
   </span>
+  <span v-else>暂未设置</span>
 </template>
 <script>
 export default {

@@ -10,26 +10,44 @@
       </el-form-item>
     </el-form>
     <div class="comment-header">评论列表</div>
-    <div class="comment-list">
+    <el-empty v-if="comments.length ===0" description="暂无评论,快发表一条试试"/>
+    <div class="comment-list" v-loading="loading">
       <div class="comment-item" v-for="(comment, index) in comments" :key="index">
-        <div class="comment-name">{{ comment.name }}</div>
-        <div class="comment-content">{{ comment.content }}</div>
-        <div class="comment-time">{{ formatDate(comment.time) }}</div>
+        <div style="display: flex;height: 50px;align-items: center">
+          <div style="display: flex">
+            <Space size="large">
+              <Avatar
+                  v-if="comment.userDto!==null && comment.userDto.photoFileDto !== undefined && comment.userDto.photoFileDto !== null"
+                  icon="ios-person" size="large"
+                  :src="comment.userDto.photoFileDto.filePath"/>
+              <Avatar v-else icon="ios-person" size="large"/>
+            </Space>
+          </div>
+          <div class="comment-name" style="display: flex;margin-left: 10px">{{ comment.userDto.userName }}</div>
+        </div>
+        <div class="comment-content" style="margin-top: 10px;margin-bottom: 10px;margin-left: 10px">{{
+            comment.content
+          }}
+        </div>
+        <div class="comment-time">评论时间:&nbsp;&nbsp;{{ comment.gmtCreate }}</div>
       </div>
-      <el-pagination
-          v-if="total > 0"
-          class="comment-pagination"
-          :current-page="currentPage"
-          :page-size="pageSize"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-      ></el-pagination>
     </div>
+    <el-pagination
+        v-if="total > 0"
+        class="comment-pagination"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="total"
+        :page-count="totalPage"
+        :page-sizes="[5, 10, 15, 20]"
+        layout="prev, pager, next"
+        @current-change="handleCurrentChange"/>
   </div>
 </template>
 
 <script>
+import {commentList, commentPublish} from "@/http/api/commentApi";
+
 export default {
   name: "CommentComponent",
   props: {
@@ -37,20 +55,21 @@ export default {
       type: Number,
       required: true
     }, bizId: {
-      type: Number,
+      type: String,
       required: true
     }
   },
   data() {
     return {
       form: {
-        name: '',
         content: ''
       },
       comments: [], // 评论列表
       total: 0, // 总评论数
       currentPage: 1, // 当前页码
+      totalPage: 1, // 当前页码
       pageSize: 10, // 每页的评论数
+      loading: true
     };
   },
   created() {
@@ -58,56 +77,34 @@ export default {
     this.getComments();
   },
   methods: {
-    // 格式化日期
-    formatDate(date) {
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-      const day = d.getDate();
-      const hours = d.getHours();
-      const minutes = d.getMinutes();
-      const seconds = d.getSeconds();
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    },
     // 获取评论列表
     getComments() {
-      // TODO: 发送请求，获取评论列表
-      // 这里采用手动添加数据的方式模拟
-      const data = [
-        {
-          name: '小明',
-          content: '这篇文章写得很好！',
-          time: '2023-04-09T11:23:00.000Z'
-        },
-        {
-          name: '小红',
-          content: '我也很喜欢这篇文章！',
-          time: '2023-04-09T12:34:56.000Z'
-        }
-      ]
-      this.comments = data;
-      this.total = data.length;
+      this.loading = true
+      this.comments = []
+      commentList(this.bizId, this.bizType, this.currentPage, this.pageSize)
+          .then(data => {
+            this.comments = data.content;
+            this.total = Number.parseInt(data.total)
+            this.totalPage = Number.parseInt(data.totalPage)
+            this.loading = false
+          })
     },
     // 提交评论
     submitForm() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          // TODO: 发送请求，提交评论
-          const comment = {
-            bizId: this.bizId,
-            bizType: this.bizType,
-            content: this.form.content
-          }
-          this.comments.unshift(comment); // 把新评论添加到评论列表开头
-          this.form.content=null
-          this.total += 1;
+          commentPublish(this.bizId, this.bizType, this.form.content).then(data => {
+            this.$Message.success("评论成功!")
+            this.form.content = null
+            this.getComments()
+          })
         }
       });
     },
     // 处理页码改变事件
     handleCurrentChange(page) {
       this.currentPage = page;
-      // TODO: 发送请求，获取对应的评论列表
+      this.getComments()
     }
   }
 };
@@ -130,6 +127,7 @@ export default {
 }
 
 .comment-list {
+  min-height: 50px;
   margin-bottom: 20px;
 }
 
@@ -159,6 +157,7 @@ export default {
 
 .comment-pagination {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .el-textarea__inner {

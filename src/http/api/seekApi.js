@@ -65,3 +65,15 @@ export function seekSearch(search) {
     });
 }
 
+
+// 修改寻宠状态
+export function seekChangeStatus(id, status) {
+    return service({
+        url: "/endpoint/v1/seek/change_status",
+        method: "POST",
+        data: {
+            "id": id,
+            "type": status
+        }
+    });
+}

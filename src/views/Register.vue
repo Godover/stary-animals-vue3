@@ -1,6 +1,6 @@
 <template>
   <div class="demo-register">
-        <Title :level="2" style="position: absolute;top:50px;left: 100px">流浪动物领养与救助平台</Title>
+        <Title :level="2" style="position: absolute;top:50px;left: 100px">流浪动物救助及领养平台</Title>
     <Title>注册</Title>
     <Login ref="form" @on-submit="handleSubmit">
       <UserName name="username"/>

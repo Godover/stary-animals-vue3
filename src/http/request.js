@@ -29,15 +29,16 @@ service.defaults.withCredentials = true
 // 请求拦截器
 service.interceptors.request.use(
     config => {
-        config.headers['Source'] = 'web';
         config.headers['Access-Control-Allow-Origin'] = '*';
+        config.headers['Authorization'] = localStorage.getItem("token");
         config.headers['Content-type'] = "application/json; charset=utf-8";
-        config.headers['guid'] = uuid.v4();
-        config.headers['uid'] = getUid();
+        // config.headers['guid'] = uuid.v4();
+        // config.headers['uid'] = getUid();
         config.data = {
             model: config.data === undefined ? null : config.data,
             header: {
-                userId: JSON.parse(localStorage.getItem("userInfo")) === null ? null : JSON.parse(localStorage.getItem("userInfo")).id
+                userId: JSON.parse(localStorage.getItem("userInfo")) === null ? null : JSON.parse(localStorage.getItem("userInfo")).id,
+                os: 'pc'
             }
         }
         config.data = JSON.stringify(config.data)
@@ -52,11 +53,11 @@ service.interceptors.response.use(
             return response.data.data;
         }
         errorLog(response.data.msg);
-        return Promise.reject(response.data.msg);
+        return Promise.reject(response.data);
     },
     error => {
         if (error && error.response) {
-            switch (error.response.status) {
+            switch (error.response.code) {
                 case 400:
                     error.message = '请求错误';
                     break;

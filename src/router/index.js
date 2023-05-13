@@ -60,8 +60,9 @@ const routes = [
                 name: '帮助',
                 component: Help,
             }, {
-                path: 'edit_user_info',
+                path: 'edit_user_info/:id',
                 name: '用户信息',
+                props: true,
                 component: EditUserInfo,
             }, {
                 path: 'message',

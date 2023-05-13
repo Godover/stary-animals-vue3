@@ -63,3 +63,16 @@ export function adoptSearch(search) {
         data: search
     });
 }
+
+
+// 修改领养状态
+export function adoptChangeStatus(id, status) {
+    return service({
+        url: "/endpoint/v1/adopt/change_status",
+        method: "POST",
+        data: {
+            "id": id,
+            "type": status
+        }
+    });
+}

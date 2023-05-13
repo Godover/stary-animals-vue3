@@ -3,47 +3,37 @@
     <Table :loading="loading" border height="650" size="small" :columns="columns" :data="data" width="1050">
       <!-- 标题-->
       <template #title="{ row }">
-        <strong style="user-select: none;color: #2b85e4" @click="this.push('/adopt/view?id='+row.id)">
-          {{ row.title }}
-        </strong>
+        <Ellipsis :text="row.title" :lines="1" tooltip @click="this.push('/adopt_view/'+row.id)"
+                  style="color: #2b85e4;user-select: none"/>
       </template>
       <!-- 描述-->
       <template #introduction="{ row }">
-        <Ellipsis :text="row.introduction" :lines="1" tooltip/>
+        <Ellipsis :text="row.description" :lines="1" tooltip/>
       </template>
-      <!-- 宠类-->
-      <template #animalCategory="{ row }">
-        <Ellipsis :text="row.animalCategoryDto.name" :lines="1" tooltip/>
+      <!-- 新闻分类-->
+      <template #newsCategory="{ row }">
+        <Ellipsis :text="row.newsCategoryDto.name" :lines="1" tooltip/>
       </template>
       <!-- 用户信息 -->
       <template #userInfo="{ row }">
-        <Ellipsis :text="row.userInfoDto.userName" :lines="1" tooltip/>
+        <Ellipsis :text="row.userDto.userName" :lines="1" tooltip/>
       </template>
-      <!-- 用户信息 -->
+      <!-- 发布时间 -->
       <template #gmtCreate="{ row }">
-        <Ellipsis :text="row.userInfoDto.gmtCreate" :lines="1" tooltip/>
-      </template>
-      <!-- 供求 -->
-      <template #supply="{ row }">
-        <span :style="row.supply===0?'color:green':'color:red'">
-        {{ row.supply === 0 ? '领养' : '送养' }}
-        </span>
-      </template>
-      <!-- 审核状态 -->
-      <template #verifyInfo="{ row }">
-        {{ row.verifyInfo.statusDesc }}
+        <Ellipsis :text="row.gmtCreate" :lines="1" tooltip/>
       </template>
       <!-- 操作 -->
       <template #action="{ row, index }">
-        <Button v-if="Math.random() > 0.5" type="primary" size="small" @click="remove(index)">通过</Button>
-        <Button v-else type="error" size="small" @click="remove(index)">下架</Button>
+        <Button type="error" size="small" @click="remove(row.id)">删除</Button>
       </template>
     </Table>
   </div>
 </template>
 
 <script>
-import {adoptListByUserId} from "@/http/api/adoptApi";
+import {mapGetters} from "vuex";
+import router from "@/router";
+import {newsDeleteById, newsList} from "@/http/api/newsApi";
 
 export default {
   name: 'AdoptManagerComponent',
@@ -51,28 +41,21 @@ export default {
   data() {
     return {
       loading: true,
-      columns: [{"title": "标题", "width": 200, "slot": "title"}, {
-        "title": "描述",
-        "width": 240,
-        "slot": "introduction"
-      }, {"title": "宠类", "width": 80, "slot": "animalCategory"}, {
-        "title": "供求",
-        "width": 70,
-        "align": "center",
-        "slot": "supply"
-      }, {"title": "发布人", "width": 130, "slot": "userInfo"}, {"title": "发布时间", "slot": "gmtCreate"}, {
-        "title": "审核状态1",
-        "width": 90,
-        "align": "center",
-        "slot": "verifyInfo"
-      }, {"title": "操作", "slot": "action", "width": 80, "align": "center"}],
+      columns: [
+        {"title": "标题", "width": 270, "slot": "title"},
+        {"title": "描述", "width": 340, "slot": "introduction"},
+        {"title": "分类", "width": 100, "slot": "newsCategory"},
+        {"title": "发布人", "width": 110, "slot": "userInfo"},
+        {"title": "发布时间", "width": 150, "slot": "gmtCreate"},
+        {"title": "操作", "slot": "action", "width": 80, "align": "center"}
+      ],
       data: []
     }
   },
   methods: {
     InitData() {
-      console.log(123123)
-      adoptListByUserId(1, 20)
+      this.loading = true
+      newsList(1, 999, null)
           .then(data => {
             this.data = data.content
             this.loading = false
@@ -81,15 +64,23 @@ export default {
     push(model) {
       window.open(model)
     },
-    remove(index) {
-      this.data.splice(index, 1);
+    remove(id) {
+      this.loading = true;
+      newsDeleteById(id)
+          .then(data => {
+            this.InitData();
+          }).catch(e => this.loading = false)
     }
   },
-  beforeCreate() {
+  created() {
     //页面初始化
-    this.$nextTick(() => {
-      this.InitData();
-    });
+    if (!this.isAdmin) {
+      router.push('/home')
+    }
+    this.InitData();
+  },
+  computed: {
+    ...mapGetters(['isAdmin', 'userInfo'])
   }
 }
 </script>

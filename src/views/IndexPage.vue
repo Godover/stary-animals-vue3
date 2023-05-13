@@ -49,15 +49,17 @@
               <Dropdown style="margin-left: 20px;">
                 <div style="display: flex">
                   <Space size="large">
-                    <Avatar v-if="userInfo.photoFileDto !== null" icon="ios-person" size="large" :src="circleUrl"/>
+                    <Avatar
+                        v-if="userInfo!==null && userInfo.photoFileDto !== undefined && userInfo.photoFileDto !== null"
+                        icon="ios-person" size="large"
+                        :src="userInfo.photoFileDto.filePath"/>
                     <Avatar v-else icon="ios-person" size="large"/>
                   </Space>
                 </div>
                 <template #list>
                   <DropdownMenu on-cli>
                     <Auth authority="true" :access="isLogin">
-                      <DropdownItem @click="push('/edit_user_info')">我的信息</DropdownItem>
-                      <DropdownItem @click="push('/message')">我的消息</DropdownItem>
+                      <DropdownItem @click="push('/edit_user_info/'+userInfo.id)">我的信息</DropdownItem>
                       <DropdownItem @click="push('/info_manager')">信息管理</DropdownItem>
                       <DropdownItem @click="logOut">退出登录</DropdownItem>
                       <template #noMatch>
@@ -102,6 +104,7 @@ export default {
         onOk: () => {
           router.push("/")
           this.setUserInfo(null)
+          this.setToken(null)
         }
       });
     },
@@ -125,7 +128,7 @@ export default {
         this.activeMenu = "";
       }
     },
-    ...mapMutations(['setUserInfo'])
+    ...mapMutations(['setUserInfo', 'setToken'])
   },
   watch: {
     $route: {

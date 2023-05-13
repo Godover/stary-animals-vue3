@@ -1,6 +1,6 @@
 <template>
   <div class="demo-login">
-        <Title :level="2" style="position: absolute;top:50px;left: 100px">流浪动物领养与救助平台</Title>
+    <Title :level="2" style="position: absolute;top:50px;left: 100px">流浪动物救助及领养平台</Title>
     <Title>登录</Title>
     <Login @on-submit="handleSubmit">
       <UserName name="username"/>
@@ -23,7 +23,7 @@
 <script>
 import router from "@/router";
 import {mapMutations} from "vuex";
-import {login} from "@/http/api/userApi";
+import {currentUserInfo, login} from "@/http/api/userApi";
 
 export default {
   data() {
@@ -33,11 +33,14 @@ export default {
     handleSubmit(valid, {username, password}) {
       login(username, password)
           .then(data => {
-            this.setUserInfo(data)
-            router.push('/')
+            this.setToken(data)
+            currentUserInfo().then(d1 => {
+              this.setUserInfo(d1)
+              router.push('/')
+            })
           })
     },
-    ...mapMutations(['setUserInfo'])
+    ...mapMutations(['setUserInfo', 'setToken'])
   }
 }
 </script>

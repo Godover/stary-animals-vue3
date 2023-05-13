@@ -12,6 +12,15 @@ export function login(userName, passWord) {
     });
 }
 
+// 登录
+export function currentUserInfo() {
+    return service({
+        url: "/endpoint/v1/user/current_info",
+        method: "POST",
+        data: {}
+    });
+}
+
 // 注册
 export function register(userName, passWord, email) {
     return service({

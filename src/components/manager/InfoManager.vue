@@ -26,16 +26,16 @@
                 <Icon type="md-document"/>
                 救助管理
               </MenuItem>
-              <MenuItem name="4" @click="this.push('/info_manager/news')">
+              <MenuItem v-if="isAdmin" name="4" @click="this.push('/info_manager/news')">
                 <Icon type="md-document"/>
                 资讯管理
               </MenuItem>
-              <MenuItem name="5" @click="this.push('/info_manager/comment')">
+              <MenuItem v-if="isAdmin" name="5" @click="this.push('/info_manager/comment')">
                 <Icon type="md-chatbubbles"/>
                 评论管理
               </MenuItem>
             </MenuGroup>
-            <MenuGroup title="系统管理">
+            <MenuGroup v-if="isAdmin" title="系统管理">
               <MenuItem name="6" @click="this.push('/info_manager/user')">
                 <Icon type="md-heart"/>
                 用户管理
@@ -63,6 +63,7 @@
 
 import AdoptManagerComponent from "@/components/manager/AdoptManager"
 import router from "@/router";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'InfoManagerComponent',
@@ -74,7 +75,10 @@ export default {
     push(url) {
       router.replace(url)
     }
-  }
+  },
+  computed: {
+    ...mapGetters(['isAdmin', 'userInfo'])
+  },
 }
 </script>
 

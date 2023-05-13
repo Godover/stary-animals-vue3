@@ -1,121 +1,117 @@
 <template>
   <div>
-    <el-form ref="form" :model="news" label-width="100px">
-      <el-form-item label="标题">
-        <el-input v-model="news.title"></el-input>
+    <el-form ref="form" :model="form" label-width="100px" :rules="rules">
+      <el-form-item label="标题" prop="title">
+        <el-input v-model="form.title"></el-input>
       </el-form-item>
-      <el-form-item label="分类">
+      <el-form-item label="简介" prop="description">
+        <el-input v-model="form.description"></el-input>
+      </el-form-item>
+      <el-form-item label="分类" prop="newCategoryDto">
         <el-select v-model="chooseNews">
           <el-option v-for="item in newsArr" :label="item.name" :value="item.name"
-                     @click="this.form.newCategoryId = item.id"></el-option>
+                     @click="this.form.newCategoryDto = item"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="内容">
+      <el-form-item label="内容" prop="content">
         <textarea
-            v-model="news.content"
+            v-model="form.content"
             rows="10"
             cols="20"
             class="textareaStyle">
           问问请问
         </textarea>
       </el-form-item>
-      <el-form-item label="首页图片" prop="receipt">
-        <el-upload
-            class="upload-demo"
-            action="/upload"
-            :on-success="handleUploadSuccess"
-            :limit="1"
-            :before-upload="beforeUpload"
-            :file-list="files"
-            list-type="picture">
-          <el-button slot="upload" size="small" type="success">上传文件
-          </el-button>
-          <div slot="tip" class="el-upload__tip">
-            &nbsp;&nbsp;只能上传jpg/png文件，且不超过5MB
-          </div>
-        </el-upload>
+      <el-form-item label="首页图片" prop="fileDto">
+        <FileUploadComponent :img-files="imgFiles"/>
       </el-form-item>
     </el-form>
-
     <div style="margin-top: 20px; margin-left: 55px">
       <el-button type="primary" @click="submitForm">发布</el-button>
-      <el-button @click="resetForm">重置</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import {defineComponent, onMounted, ref} from "vue";
 import {newsCategoryList} from "@/http/api/commonApi";
+import {mapGetters} from 'vuex'
+import router from "@/router";
+import {newsModify} from "@/http/api/newsApi";
+import FileUploadComponent from "@/components/home/FileUploadComponent";
 
-export default defineComponent({
-  setup() {
-    const news = ref({
-      "content": "",
-      "description": "",
-      "fileId": 0,
-      "newCategoryId": 0,
-      "title": "",
-      fileDto: {}
-    })
-    const newsArr = ref([])
-    const files = ref([])
-    const chooseNews = ref('')
 
-    onMounted(() => {
-      newsCategoryList().then(data => {
-        newsArr.value = data
-        chooseNews.value = data[0].name
-      })
-    });
-    const submitForm = () => {
-      const form = document.getElementById("form");
-      form.validate().then((valid) => {
-        if (valid) {
-          // 提交表单逻辑
-          console.log(news.value);
-          // 清空表单
-          resetForm();
+export default {
+  name: "RealTimePublish",
+  components: {FileUploadComponent},
+  data() {
+    return {
+      form: {
+        "title": "",
+        "content": "",
+        "description": "",
+        "newCategoryDto": null,
+        fileDto: null
+      },
+      imgFiles: [],
+      chooseNews: "",
+      newsArr: [],
+      rules: {
+        title: [
+          {required: true, message: '标题不能为空', trigger: 'blur'}
+        ],
+        content: [
+          {required: true, message: '内容不能为空', trigger: 'blur'}
+        ],
+        description: [
+          {required: true, message: '简介不能为空', trigger: 'blur'}
+        ],
+        newCategoryDto: [
+          {required: true, message: '分类不能为空', trigger: 'blur'}
+        ],
+        fileDto: [
+          {required: true, message: '请上传图片', trigger: 'change'}
+        ]
+      },
+    }
+  },
+  watch: {
+    imgFiles: {
+      handler(val, oldval) {
+        if (val.length !== 0) {
+          this.form.fileDto = val[0]
         } else {
-          console.log("表单验证失败");
+          this.form.fileDto = null
+        }
+      },
+      deep: true
+    }
+  },
+  computed: {
+    ...mapGetters(['getToken'])
+  },
+  methods: {
+    submitForm() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          newsModify(this.form)
+              .then(data => {
+                this.$Message.success("提交成功!")
+                router.push("/realtime_view/" + data)
+              })
+        } else {
+          return false;
         }
       });
-    };
-
-    const resetForm = () => {
-      const form = document.getElementById("form");
-      form.resetFields();
-    };
-
-    const handleUploadSuccess = (response, file, fileList) => {
-      console.log(response, file, fileList);
     }
-    const beforeUpload = (file) => {
-      const isJpgOrPng =
-          file.type === "image/jpeg" || file.type === "image/png";
-      const isLt5M = file.size / 1024 / 1024 < 5;
-
-      if (!isJpgOrPng) {
-        this.$message.error("上传图片只能是 JPG/PNG 格式!");
-      }
-      if (!isLt5M) {
-        this.$message.error("上传图片大小不能超过 5MB!");
-      }
-      return isJpgOrPng && isLt5M;
-    }
-
-    return {
-      news,
-      submitForm,
-      resetForm,
-      newsArr,
-      chooseNews,
-      handleUploadSuccess,
-      beforeUpload,
-      files
-    };
   },
-});
+  created() {
+    newsCategoryList().then(data => {
+      this.newsArr = data
+      this.chooseNews = data[0].name
+      this.form.newCategoryDto = data[0]
+    })
+  }
+}
 </script>
 <style>
 .textareaStyle {

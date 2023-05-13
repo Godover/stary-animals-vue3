@@ -7,8 +7,8 @@
           寻宠信息
         </BreadcrumbItem>
       </Breadcrumb>
-      <div class="ivu-fr" style="display: flex">
-        <Button type="primary" @click="push('/seek_publish')">发布寻宠</Button>
+      <div v-if="isLogin" class="ivu-fr" style="display: flex">
+        <Button type="primary" @click="push('/seek_publish/0')">发布寻宠</Button>
       </div>
     </div>
     <el-divider style="margin-top: 15px"/>
@@ -42,20 +42,23 @@
     <Row class-name="ivu-mt-8">
       <Col span="1" class="ivu-text-center" style="margin-top: 6px">酬金：</Col>
       <Col span="23">
-        <!--        expandable-->
         <TagSelect v-model="chooseMoney" @on-change="searchInfo">
           <TagSelectOption v-for="item in moneyArray" :name="item">{{ item }}</TagSelectOption>
         </TagSelect>
       </Col>
     </Row>
-    <Tabs value="name1" class="ivu-mt-16" :animated="false" @on-click="searchInfo">
-      <TabPane icon="ios-information-circle" label="全部" :name="[0,1,2]"></TabPane>
-      <TabPane icon="ios-sad" label="寻找中" :name="[1]"></TabPane>
-      <TabPane icon="ios-checkmark-circle" label="已找到" :name="[2]"></TabPane>
+    <Tabs v-model="seekStatus" :animated="false"
+          @on-click="searchInfo">
+      <TabPane icon="ios-information-circle" label="全部" name="全部"></TabPane>
+      <TabPane icon="ios-sad" label="寻找中" name="寻找中"></TabPane>
+      <TabPane icon="ios-checkmark-circle" label="已找到" name="已找到"></TabPane>
     </Tabs>
     <div style="display: flex">
       <div class="cardContainer">
-        <div style="background:#f8f8f8;padding: 4px;width: 900px" v-for="item in infoArray">
+        <div v-if="infoArray !==null && infoArray.length === 0" style="width: 900px;">
+          <el-empty description="暂无数据"/>
+        </div>
+        <div style="background:#f8f8f8;margin:1px;padding: 4px;width: 900px" v-for="item in infoArray">
           <Card :bordered="false" @click="push('/seek_view/'+item.id)">
             <div style="display: flex">
               <div style="height: 100px;width: 200px;position: relative;">
@@ -65,8 +68,8 @@
               <div class="ivu-ml-16" style="width: 700px">
                 <ul style="list-style: none">
                   <li class="title">
-                    <b v-if="item.type" style="color: #ed4014">[寻宠]</b>
-                    <b v-else style="color: #19be6b">[寻主人]</b>
+                    <b v-if="item.type" style="color: #ed4014">[寻主人]</b>
+                    <b v-else style="color: #19be6b">[寻宠]</b>
                     <b>{{ item.title }}</b>
                   </li>
                   <li class="ivu-mb-8 ivu-mt-4 description">
@@ -79,7 +82,7 @@
                       &nbsp;&nbsp;
                       时间：{{ item.gmtCreate }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </el-text>
-                    <SeekStatusComponent style="position: absolute;right: 0" :status="item.status"/>
+                    <SeekStatusComponent :status="item.status"/>
                   </li>
                 </ul>
               </div>
@@ -87,7 +90,6 @@
           </Card>
         </div>
       </div>
-
       <div style="width: 500px;height:470px;background: #fafafa;border-radius: 5px;">
         <Title :level="4" style="color: #ed4014;margin-top: 10px;margin-left: 20px">热门信息</Title>
         <div v-for="(item, index) in hotList" :key="index" style="width: 200px;margin: 15px 20px;user-select: none"
@@ -108,6 +110,7 @@ import {ElLoading} from "element-plus";
 import {seekSearch} from "@/http/api/seekApi";
 import {animalsCategoryList, cityList, hotSeekList} from "@/http/api/commonApi";
 import CityComponent from "@/components/home/CityComponent";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'SeekComponent',
@@ -120,6 +123,7 @@ export default {
       chooseCategory: [],
       chooseType: [0, 1],
       chooseMoney: ["0-500元", "500-1000元", "1000元-1500元", "1500-2000元", "2000-3000元"],
+      seekStatus: "全部",
       cityArray: [],
       categoryArray: [],
       typeArray: [0, 1],
@@ -130,7 +134,7 @@ export default {
     }
   },
   methods: {
-    searchInfo(seekStatus = null) {
+    searchInfo() {
       //页面初始化
       this.loadingInstance = ElLoading.service();
       seekSearch({
@@ -140,7 +144,7 @@ export default {
         "types": this.chooseCategory,
         "supply": this.chooseType,
         "money": this.chooseMoney,
-        "status": seekStatus
+        "status": this.seekStatus === '全部' ? [0, 1, 2] : this.seekStatus === '已找到' ? [1] : [0]
       }).then(data => {
         this.infoArray = data.content
         this.loadingInstance.close();
@@ -149,6 +153,9 @@ export default {
     push(model) {
       router.push(model)
     }
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   },
   created() {
     this.loadingInstance = ElLoading.service();
@@ -176,12 +183,9 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 .cardContainer {
-  flex-wrap: wrap;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  width: 100%;
 }
 
 .title {

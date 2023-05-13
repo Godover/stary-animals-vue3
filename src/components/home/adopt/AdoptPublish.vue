@@ -6,14 +6,14 @@
     </el-form-item>
     <el-form-item label="宠物性别" prop="sex">
       <el-radio-group v-model="form.sex">
-        <el-radio :label="1">公</el-radio>
         <el-radio :label="0">母</el-radio>
+        <el-radio :label="1">公</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="数量" prop="amount">
+    <el-form-item label="宠物数量" prop="amount">
       <el-input-number v-model="form.amount" :min="1" :max="10" label="数量"></el-input-number>
     </el-form-item>
-    <el-form-item label="年龄" prop="age">
+    <el-form-item label="宠物年龄" prop="age">
       <el-input-number v-model="form.age" :min="1" :max="30" label="年龄"></el-input-number>
     </el-form-item>
     <el-form-item label="描述信息" prop="description">
@@ -28,11 +28,13 @@
     <el-form-item label="手机号" prop="phone">
       <el-input v-model="form.phone" placeholder="请输入手机号"></el-input>
     </el-form-item>
-    <el-form-item label="城市" prop="cityId">
+    <el-form-item label="城市" prop="cityDto">
       <el-select v-if="this.cityArray.length !== 0" v-model="chooseCity" placeholder="请选择城市" style="width: 300px">
         <el-option v-for="item in cityArray"
-                   :value="item.province + (item.province !== null ? '/' : '') + item.city + (item.city !== null ? '/' : '') + item.county"
-                   @click="this.form.cityId = item.id">
+                   :value="(item.province!==null?item.province:'') + (item.province !== null ? '/' : '') +
+                   (item.city!==null?item.city:'') + (item.city !== null ? '/' : '') +
+                    (item.county!==null?item.county:'')"
+                   @click="this.form.cityDto = item">
           <CityComponent :city="item"/>
         </el-option>
       </el-select>
@@ -43,9 +45,9 @@
         <el-radio :label="1">送养</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="宠物分类" prop="animalCategoryId">
+    <el-form-item label="宠物分类" prop="animalCategoryDto">
       <el-select v-if="this.animalCategoryArray.length !== 0" v-model="chooseAnimals" placeholder="请选择宠物分类">
-        <el-option v-for="item in animalCategoryArray" :value="item.name" @click="this.form.animalCategoryId = item.id">
+        <el-option v-for="item in animalCategoryArray" :value="item.name" @click="this.form.animalCategoryDto = item">
           {{ item.name }}
         </el-option>
       </el-select>
@@ -62,17 +64,8 @@
         <el-radio :label="1">是</el-radio>
       </el-radio-group>
     </el-form-item>
-    <el-form-item label="上传图片">
-      <el-upload
-          class="upload-demo"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :before-remove="beforeRemove"
-          :file-list="form.images">
-        <el-button slot="upload" size="small" type="success">上传文件</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-      </el-upload>
+    <el-form-item label="上传图片" prop="imgFiles">
+      <FileUploadComponent :img-files="form.imgFiles"/>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm">提交</el-button>
@@ -84,28 +77,31 @@ import CityComponent from "@/components/home/CityComponent";
 import {animalsCategoryList, cityList} from "@/http/api/commonApi";
 import {adoptById, adoptModifyById} from "@/http/api/adoptApi";
 import router from "@/router";
+import {ElLoading} from "element-plus";
+import FileUploadComponent from "@/components/home/FileUploadComponent";
 
 export default {
   name: 'AdoptPublish',
-  components: {CityComponent},
+  components: {FileUploadComponent, CityComponent},
   data() {
     return {
       form: {
         "id": this.$route.params.id === undefined || Number.parseInt(this.$route.params.id.toString()) === 0 ? null : this.$route.params.id,
         "age": 1,
         "amount": 1,
-        "animalCategoryId": 0,
-        "cityId": 0,
-        "description": "string",
+        "animalCategoryDto": {},
+        "cityDto": {},
+        "description": "",
         "expellingParasite": 0,
-        "personName": "string",
-        "phone": "string",
+        "personName": "",
+        "phone": "",
         "sex": 0,
         "supply": 0,
-        "title": "string",
+        "title": "",
         "vaccine": 0,
-        "weChat": "string",
-        "imgFileIds": []
+        "status": 0,
+        "weChat": "",
+        "imgFiles": []
       },
       rules: {
         title: [
@@ -132,13 +128,13 @@ export default {
         phone: [
           {required: true, message: '请填写手机号', trigger: 'blur'}
         ],
-        cityId: [
+        cityDto: [
           {required: true, message: '请选择城市', trigger: 'change'}
         ],
         supply: [
           {required: true, message: '请选择供求类型', trigger: 'change'}
         ],
-        animalCategoryId: [
+        animalCategoryDto: [
           {required: true, message: '请选择宠物分类', trigger: 'change'}
         ],
         expellingParasite: [
@@ -147,7 +143,7 @@ export default {
         vaccine: [
           {required: true, message: '请选择疫苗状态', trigger: 'change'}
         ],
-        images: [
+        imgFiles: [
           {required: true, message: '请上传图片', trigger: 'change'}
         ]
       },
@@ -155,48 +151,61 @@ export default {
       cityArray: [],
       chooseAnimals: null,
       animalCategoryArray: [],
+      loadingInstance: null,
+      count: 0
     }
   },
   methods: {
+    showLoading(v) {
+      this.count = v
+      this.loadingInstance = ElLoading.service();
+    },
+    hideLoading() {
+      this.count--
+      if (this.count === 0) {
+        this.loadingInstance.close();
+      }
+    },
     submitForm() {
       this.$refs.form.validate((valid) => {
         if (valid) {
           adoptModifyById(this.form)
               .then(data => {
-                alert('提交成功')
+                this.$Message.success("提交成功!")
                 router.push("/adopt_view/" + data)
               })
         } else {
           return false;
         }
       });
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
     }
   },
   created() {
-    cityList().then(data => {
-      this.form.cityId = data[0].id
-      this.chooseCity = data[0].province + (data[0].province !== null ? '/' : '') + data[0].city + (data[0].city !== null ? '/' : '') + data[0].county
-      this.cityArray = data
-    })
-    animalsCategoryList().then(data => {
-      this.form.animalCategoryId = data[0].id
-      this.chooseAnimals = data[0].name
-      this.animalCategoryArray = data
-    })
+    this.showLoading(2)
     if (this.form.id !== null) {
+      this.showLoading(3)
       adoptById(this.form.id).then(data => {
-        this.form = data
+        if (data !== null) {
+          this.form = data
+        }
+        this.hideLoading()
       })
     }
+    cityList().then(data => {
+      this.form.cityDto = data[0]
+      let item = data[0]
+      this.chooseCity = (item.province !== null ? item.province : '') + (item.province !== null ? '/' : '') +
+          (item.city !== null ? item.city : '') + (item.city !== null ? '/' : '') +
+          (item.county !== null ? item.county : '')
+      this.cityArray = data
+      this.hideLoading()
+    })
+    animalsCategoryList().then(data => {
+      this.form.animalCategoryDto = data[0]
+      this.chooseAnimals = data[0].name
+      this.animalCategoryArray = data
+      this.hideLoading()
+    })
   }
 }
 </script>

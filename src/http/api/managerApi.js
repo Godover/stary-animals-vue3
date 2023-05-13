@@ -27,3 +27,19 @@ export function editAnimalCategory(id, name, description, isActive) {
         }
     });
 }
+
+
+// 修改宠物分类
+export function editCity(id, province, city, county, isActive) {
+    return service({
+        url: "/endpoint/v1/manager/edit_city",
+        method: "POST",
+        data: {
+            "id": id,
+            "province": province,
+            "city": city,
+            "county": county,
+            "isActive": isActive
+        }
+    });
+}

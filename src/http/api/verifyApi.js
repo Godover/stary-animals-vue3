@@ -1,7 +1,7 @@
 import service from "../request"
 
 // 审核
-export function modify(bizType, bizId, verifyStatus, message) {
+export function verifyModify(bizId, bizType, verifyStatus, message) {
     return service({
         url: "/endpoint/v1/verify/modify",
         method: "POST",

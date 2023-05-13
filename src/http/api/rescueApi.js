@@ -64,3 +64,16 @@ export function rescueSearch(search) {
         data: search
     });
 }
+
+
+// 修改救助状态
+export function rescueChangeStatus(id, status) {
+    return service({
+        url: "/endpoint/v1/rescue/change_status",
+        method: "POST",
+        data: {
+            "id": id,
+            "type": status
+        }
+    });
+}

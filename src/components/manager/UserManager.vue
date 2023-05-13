@@ -1,78 +1,86 @@
 <template>
   <div>
     <Table :loading="loading" border height="650" size="small" :columns="columns" :data="data" width="1050">
+      <!--
+               {"title": "序号", "width": 200, "slot": "sort"},
+        {"title": "用户名", "width": 240, "slot": "userName"},
+        {"title": "邮箱", "width": 80, "slot": "email"},
+        {"title": "城市", "width": 70, "align": "center", "slot": "city"},
+        {"title": "角色", "width": 130, "slot": "role"},
+        {"title": "注册时间", "width": 130, "slot": "gmtCreate"},
+        {"title": "最后登录时间", "width": 130, "slot": "lastActiveTime"},
+        {"title": "操作", "slot": "action", "width": 80, "align": "center"}
+       -->
       <!-- 标题-->
-      <template #title="{ row }">
+      <template #sort="{ row }">
         <strong style="user-select: none;color: #2b85e4" @click="this.push('/adopt/view?id='+row.id)">
-          {{ row.title }}
+          {{ row.id }}
         </strong>
       </template>
       <!-- 描述-->
-      <template #introduction="{ row }">
-        <Ellipsis :text="row.introduction" :lines="1" tooltip/>
+      <template #userName="{ row }">
+        <Ellipsis :text="row.userName" :lines="1" tooltip/>
       </template>
-      <!-- 宠类-->
-      <template #animalCategory="{ row }">
-        <Ellipsis :text="row.animalCategoryDto.name" :lines="1" tooltip/>
+      <!-- 新闻分类-->
+      <template #role="{ row }">
+        <Ellipsis :text="row.userCategoryDto.name" :lines="1" tooltip/>
       </template>
-      <!-- 用户信息 -->
-      <template #userInfo="{ row }">
-        <Ellipsis :text="row.userInfoDto.userName" :lines="1" tooltip/>
+      <!-- 邮箱 -->
+      <template #email="{ row }">
+        <Ellipsis v-if="row.email!==null" :text="row.email" :lines="1" tooltip/>
+        <span v-else>暂未设置</span>
       </template>
-      <!-- 用户信息 -->
+      <!-- 注册时间 -->
       <template #gmtCreate="{ row }">
-        <Ellipsis :text="row.userInfoDto.gmtCreate" :lines="1" tooltip/>
+        <Ellipsis :text="row.gmtCreate" :lines="1" tooltip/>
       </template>
-      <!-- 供求 -->
-      <template #supply="{ row }">
-        <span :style="row.supply===0?'color:green':'color:red'">
-        {{ row.supply === 0 ? '领养' : '送养' }}
-        </span>
+      <!-- 最近活跃时间 -->
+      <template #lastActiveTime="{ row }">
+        <Ellipsis :text="row.lastActiveTime" :lines="1" tooltip/>
       </template>
-      <!-- 审核状态 -->
-      <template #verifyInfo="{ row }">
-        {{ row.verifyInfo.statusDesc }}
+      <!-- 城市 -->
+      <template #city="{ row }">
+        <CityComponent :city="row.cityDto"/>
       </template>
       <!-- 操作 -->
       <template #action="{ row, index }">
-        <Button v-if="Math.random() > 0.5" type="primary" size="small" @click="remove(index)">通过</Button>
-        <Button v-else type="error" size="small" @click="remove(index)">下架</Button>
+        <Button v-if="row.userCategoryDto.code !== 999" type="primary" size="small" @click="blank(row.id)">拉黑</Button>
+        <Button v-else type="error" size="small" @click="blank(row.id)">恢复</Button>
       </template>
     </Table>
   </div>
 </template>
 
 <script>
-import {adoptListByUserId} from "@/http/api/adoptApi";
+import {mapGetters} from "vuex";
+import router from "@/router";
+import {userList} from "@/http/api/userApi";
+import CityComponent from "@/components/home/CityComponent";
 
 export default {
-  name: 'AdoptManagerComponent',
-  components: {},
+  name: 'UserManagerComponent',
+  components: {CityComponent},
   data() {
     return {
       loading: true,
-      columns: [{"title": "标题", "width": 200, "slot": "title"}, {
-        "title": "描述",
-        "width": 240,
-        "slot": "introduction"
-      }, {"title": "宠类", "width": 80, "slot": "animalCategory"}, {
-        "title": "供求",
-        "width": 70,
-        "align": "center",
-        "slot": "supply"
-      }, {"title": "发布人", "width": 130, "slot": "userInfo"}, {"title": "发布时间", "slot": "gmtCreate"}, {
-        "title": "审核状态1",
-        "width": 90,
-        "align": "center",
-        "slot": "verifyInfo"
-      }, {"title": "操作", "slot": "action", "width": 80, "align": "center"}],
+      columns: [
+        {"title": "序号", "width": 80, "slot": "sort"},
+        {"title": "用户名", "width": 100, "slot": "userName"},
+        {"title": "邮箱", "slot": "email"},
+        {"title": "城市", "align": "center", "slot": "city"},
+        {"title": "角色", "width": 130, "slot": "role"},
+        {"title": "注册时间", "width": 160, "slot": "gmtCreate"},
+        {"title": "最后登录时间", "width": 160, "slot": "lastActiveTime"},
+        {"title": "操作", "slot": "action", "width": 80, "align": "center"}
+      ],
       data: []
     }
   },
   methods: {
     InitData() {
-      console.log(123123)
-      adoptListByUserId(1, 20)
+      this.loading = true
+      this.data = []
+      userList(1, 999)
           .then(data => {
             this.data = data.content
             this.loading = false
@@ -81,15 +89,19 @@ export default {
     push(model) {
       window.open(model)
     },
-    remove(index) {
-      this.data.splice(index, 1);
+    blank(index) {
+
     }
   },
-  beforeCreate() {
+  created() {
     //页面初始化
-    this.$nextTick(() => {
-      this.InitData();
-    });
+    if (!this.isAdmin) {
+      router.push('/home')
+    }
+    this.InitData();
+  },
+  computed: {
+    ...mapGetters(['isAdmin', 'userInfo'])
   }
 }
 </script>

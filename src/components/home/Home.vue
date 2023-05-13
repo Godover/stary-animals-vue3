@@ -24,7 +24,7 @@
           <ul>
             <li
                 v-for="item in hotRealTime"
-                style="align-items: center; user-select: none"
+                style="align-items: center; user-select: none;list-style:none"
                 @click="push('/realtime_view/' + item.id)">
               <el-text tag="b" class="w-350px" truncated>
                 {{ item.title }}
@@ -41,7 +41,9 @@
             <ul>
               <li
                   v-for="item in hotInteresting"
-                  @click="push('/realtime_view/' + item.id)">
+                  @click="push('/realtime_view/' + item.id)"
+                  style="list-style:none"
+              >
                 <el-text tag="b" truncated>{{ item.title }}</el-text>
               </li>
             </ul>
@@ -53,7 +55,7 @@
     <div style="display: flex; flex-wrap: wrap">
       <div
           v-for="item in hotAdopts"
-          style="width: 255px; user-select: none"
+          style="width: 253px; user-select: none"
           @click="push('/adopt_view/' + item.id)">
         <div style="background: #f8f8f8; padding: 3px">
           <Card :bordered="false">
@@ -76,10 +78,10 @@
       </div>
     </div>
     <Title :level="3" class="ivu-mt-16 ivu-mb-16">最新寻宠</Title>
-    <div class="cardContainer">
+    <div style="display: flex; flex-wrap: wrap">
       <div
           v-for="item in hotSeeks"
-          style="width: 255px; background: #f8f8f8; padding: 3px"
+          style="width: 253px; background: #f8f8f8; padding: 3px"
           @click="push('/seek_view/' + item.id)">
         <Card :bordered="false">
           <template #title>
@@ -132,14 +134,14 @@ export default {
   created: function () {
     //页面初始化
     this.loadingInstance = ElLoading.service();
-    hotNewsList(0).then(data => {
+    hotNewsList(1).then(data => {
       this.count++
       this.hotRealTime = data.content;
       if (this.count === 4) {
         this.loadingInstance.close();
       }
     });
-    hotNewsList(1).then(data => {
+    hotNewsList(2).then(data => {
       this.count++
       this.hotInteresting = data.content;
       if (this.count === 4) {

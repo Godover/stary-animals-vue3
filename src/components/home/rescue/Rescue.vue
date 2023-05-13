@@ -1,12 +1,12 @@
 <template>
   <div style="justify-content: space-between;align-items:center;display: flex">
     <Breadcrumb>
-      <BreadcrumbItem to="/realTimeInfo">
+      <BreadcrumbItem to="/realtime">
         <Icon type="ios-home-outline"></Icon>
         救助信息
       </BreadcrumbItem>
     </Breadcrumb>
-    <div class="ivu-fr" style="display: flex">
+    <div v-if="isLogin" class="ivu-fr" style="display: flex">
       <Button type="primary" @click="push('/rescue_publish/0')">发布救助</Button>
     </div>
   </div>
@@ -28,14 +28,16 @@
                 {{ item.description }}
               </li>
               <li style="position: absolute;bottom: 10px;width: 420px">
+                <div>
+                  <el-text>宠类：{{ item.animalCategoryDto.name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    区县：
+                    <CityComponent :city="item.cityDto"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </el-text>
+                </div>
                 <el-text>
-                  宠类：{{ item.animalCategoryDto.name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  时间：{{ item.gmtCreate }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  发布时间：{{ item.gmtCreate }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 </el-text>
-                <el-text class="ivu-fr"
-                         :style="{'background-color': item.status === 1 ?'#19be6b':'red','border-radius': '2px',color: 'white'}">
-                  {{ item.status === 0 ? '未完成' : item.status === 1 ? '已完成' : '已放弃' }}
-                </el-text>
+                <RescueStatusComponent :status="item.status"/>
               </li>
             </ul>
           </div>
@@ -52,15 +54,20 @@ import router from "@/router";
 import {rescueList} from "@/http/api/rescueApi";
 import CityComponent from "@/components/home/CityComponent";
 import {ElLoading} from "element-plus";
+import RescueStatusComponent from "@/components/home/rescue/RescueStatusComponent";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'RescueComponent',
-  components: {CityComponent},
+  components: {RescueStatusComponent, CityComponent},
   data() {
     return {
       infoArray: [],
       loadingInstance: null
     }
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   },
   methods: {
     push(model) {
@@ -77,7 +84,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .cardContainer {
   flex-wrap: wrap;
   display: flex;

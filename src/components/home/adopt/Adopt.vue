@@ -7,7 +7,7 @@
           领养信息
         </BreadcrumbItem>
       </Breadcrumb>
-      <div class="ivu-fr" style="display: flex">
+      <div v-if="isLogin" class="ivu-fr" style="display: flex">
         <Button type="primary" @click="push('/adopt_publish/0')">发布领养</Button>
       </div>
     </div>
@@ -42,13 +42,15 @@
     <!--    最新信息-->
     <Tabs value="name1" class="ivu-mt-16" :animated="true">
       <TabPane icon="ios-information-circle" label="最新信息" name="name1">
-        <div class="cardContainer">
-          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in newsAdopt">
+        <div v-if="newsAdopt !==null && newsAdopt.length !== 0" class="cardContainer">
+          <div style="background:#f8f8f8;margin:1px;padding: 3px;width: 640px" v-for="(item,key) in newsAdopt"
+               :key="key">
             <Card :bordered="false" @click="push('/adopt_view/'+item.id)">
               <div style="display: flex">
                 <div style="height: 100px;width: 200px;position: relative;">
-                  <img :src="item.imgFiles[0].filePath"
-                       style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+                  <el-image :src="item.imgFiles[0].filePath"
+                            style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;"
+                            loading="lazy"/>
                 </div>
                 <div class="ivu-ml-16" style="width: 450px">
                   <ul style="list-style: none">
@@ -61,11 +63,16 @@
                       {{ item.description }}
                     </li>
                     <li style="position: absolute;bottom: 10px;width: 420px">
-                      <el-text>宠类：{{ item.category }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        区县：{{ item.city }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        时间：{{ item.time }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <div>
+                        <el-text>宠类：{{ item.animalCategoryDto.name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          区县：
+                          <CityComponent :city="item.cityDto"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </el-text>
+                      </div>
+                      <el-text>
+                        发布时间：{{ item.gmtCreate }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       </el-text>
-                      <AdoptStatusComponent :status="item.status"/>
+                      <AdoptStatusComponent :supply="item.supply" :status="item.status"/>
                     </li>
                   </ul>
                 </div>
@@ -73,34 +80,40 @@
             </Card>
           </div>
         </div>
+        <el-empty v-else description="暂无数据"/>
       </TabPane>
       <!--      已搞定-->
       <TabPane icon="ios-checkmark-circle" label="已搞定" name="name2">
-        <div class="cardContainer">
-          <div style="background:#f8f8f8;padding: 3px;width: 650px" v-for="item in overAdopt">
+        <div v-if="overAdopt !==null && overAdopt.length !== 0" class="cardContainer">
+          <div style="background:#f8f8f8;padding: 3px;width: 640px" v-for="(item,key) in overAdopt" :key="key">
             <Card :bordered="false" @click="push('/adopt_view/'+item.id)">
               <div style="display: flex">
                 <div style="height: 100px;width: 200px;position: relative;">
-                  <img :src="item.imgFiles[0].filePath"
-                       style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;">
+                  <el-image :src="item.imgFiles[0].filePath"
+                            style="width: 100%;height: 100%;object-fit: cover;object-position: center; position: absolute;top: 0;left: 0;"
+                            loading="lazy"/>
                 </div>
                 <div class="ivu-ml-16" style="width: 450px">
                   <ul style="list-style: none">
                     <li class="title">
+                      <b v-if="item.supply===0" style="color: #19be6b">[领养]</b>
+                      <b v-else style="color: #ed4014">[送养]</b>
                       <b>{{ item.title }}</b>
                     </li>
                     <li class="ivu-mb-8 ivu-mt-4 description">
                       {{ item.description }}
                     </li>
                     <li style="position: absolute;bottom: 10px;width: 420px">
-                      <el-text>宠类：{{ item.category }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        区县：{{ item.city }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        时间：{{ item.time }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      <div>
+                        <el-text>宠类：{{ item.animalCategoryDto.name }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                          区县：
+                          <CityComponent :city="item.cityDto"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </el-text>
+                      </div>
+                      <el-text>
+                        发布时间：{{ item.gmtCreate }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       </el-text>
-                      <el-text class="ivu-fr"
-                               :style="{'background-color': item.status === 3||item.status === 4 ?'#19be6b':'#c5c8ce','border-radius': '2px',color: 'white',}">
-                        {{ item.status === 3 ? '已领养' : item.status === 4 ? '已送养' : '放弃了' }}
-                      </el-text>
+                      <AdoptStatusComponent :supply="item.supply" :status="item.status"/>
                     </li>
                   </ul>
                 </div>
@@ -108,6 +121,7 @@
             </Card>
           </div>
         </div>
+        <el-empty v-else description="暂无数据"/>
       </TabPane>
     </Tabs>
   </div>
@@ -122,6 +136,7 @@ import {animalsCategoryList, cityList} from "@/http/api/commonApi";
 import {adoptSearch} from "@/http/api/adoptApi";
 import {ElLoading} from "element-plus";
 import CityComponent from "@/components/home/CityComponent";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'AdoptComponent',
@@ -141,29 +156,37 @@ export default {
       loadingInstance: null
     }
   },
+  computed: {
+    ...mapGetters(['isLogin'])
+  },
   methods: {
     push(model) {
       router.push(model)
-    },
+    }
+    ,
     showLoading() {
       this.count = 0
       this.loadingInstance = ElLoading.service();
-    },
+    }
+    ,
     hideLoading() {
       this.count++
       if (this.count === 2) {
-        this.loadingInstance.close();
+        setTimeout(() => {
+          this.loadingInstance.close();
+        }, 1000)
       }
-    },
-    searchInfo(tags = null) {
+    }
+    ,
+    searchInfo() {
       this.showLoading()
       adoptSearch({
         "page": 1,
         "size": 999,
         "city": this.chooseCity,
         "types": this.chooseCategory,
-        "supply": this.typeArray,
-        "status": [0, 1, 2, 3, 4]
+        "supply": this.chooseType,
+        "status": [0, 1, 2]
       }).then(data => {
         this.count++
         this.newsAdopt = data.content
@@ -174,15 +197,17 @@ export default {
         "size": 999,
         "city": this.chooseCity,
         "types": this.chooseCategory,
-        "supply": this.typeArray,
-        "status": [3, 4]
+        "supply": this.chooseType,
+        "status": [1, 2]
       }).then(data => {
         this.count++
         this.overAdopt = data.content
         this.hideLoading()
       })
     }
-  }, created() {
+  }
+  ,
+  created() {
     //页面初始化
     this.showLoading()
     cityList().then(data => {
@@ -205,7 +230,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .cardContainer {
   width: 100%;
   flex-wrap: wrap;
